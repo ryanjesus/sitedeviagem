@@ -87,20 +87,6 @@ rolemoto/
 
 ---
 
-## Deploy no Render
-
-1. Suba o projeto no GitHub (sem o `.env`)
-2. Acesse [render.com](https://render.com) e crie um **Web Service**
-3. Conecte o repositório
-4. Configure:
-   - **Build Command:** `npm install`
-   - **Start Command:** `npm start`
-5. Em **Environment Variables**, adicione:
-   - `WEATHERAPI_KEY` = sua chave real
-6. Clique em **Deploy**
-
----
-
 ## Rolê Score (0–100)
 
 Cada cidade recebe uma pontuação baseada nas condições do dia:
