@@ -1,0 +1,782 @@
+
+<style>
+  :root {
+    --espresso: #1A1008; --roast: #2C1A0E; --bark: #3D2410; --leather: #6B3D1E;
+    --caramel: #A0522D; --amber: #C8782A; --gold: #E8A030; --cream: #F5E6C8;
+    --fog: #D4C4A0; --smoke: #8A7860; --green-go: #6BCB77; --red-stop: #E05252;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--espresso); color: var(--cream); font-family: 'Outfit', sans-serif; }
+  /* ── Hero ─────────────────────────────────────────── */
+  .hero { background: var(--roast); border-bottom: 1px solid var(--bark); }
+  .hero-content { max-width: 1100px; margin: 0 auto; padding: 36px 24px 20px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .logo-area { display: flex; align-items: center; gap: 16px; }
+  .logo-icon { width: 52px; height: 52px; background: var(--amber); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .logo-main { font-family: 'Bebas Neue', cursive; font-size: 36px; letter-spacing: 3px; color: var(--cream); line-height: 1; }
+  .logo-main span { color: var(--gold); }
+  .logo-sub { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 4px; color: var(--smoke); margin-top: 2px; }
+  .hero-tagline { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 15px; color: var(--fog); opacity: 0.8; text-align: right; max-width: 220px; line-height: 1.5; }
+  /* ── Nav tabs ─────────────────────────────────────── */
+  .hero-nav { max-width: 1100px; margin: 0 auto; padding: 0 24px 14px; }
+  .app-nav { display: flex; gap: 4px; }
+  .nav-tab { display: inline-flex; align-items: center; gap: 7px; padding: 8px 18px; border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1px; text-decoration: none; background: var(--bark); border: 1px solid var(--leather); color: var(--fog); transition: border-color 0.15s, color 0.15s, background 0.15s; }
+  .nav-tab:hover { border-color: var(--amber); color: var(--cream); }
+  .nav-tab.active { background: var(--amber); border-color: var(--amber); color: var(--espresso); font-weight: 600; }
+  /* ── Filter strip ─────────────────────────────────── */
+  .filter-strip { background: var(--roast); border-bottom: 1px solid var(--bark); position: sticky; top: 0; z-index: 50; }
+  .filter-inner { max-width: 1100px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .filter-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--smoke); text-transform: uppercase; flex-shrink: 0; }
+  .state-select { appearance: none; background: var(--bark); border: 1px solid var(--leather); border-radius: 6px; color: var(--cream); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500; padding: 10px 14px; outline: none; transition: border-color 0.2s; padding-right: 36px; min-width: 200px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A0522D' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+  .state-select:hover, .state-select:focus { border-color: var(--amber); }
+  .state-select option { background: var(--bark); color: var(--cream); }
+  .results-count { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--smoke); letter-spacing: 1px; margin-left: auto; }
+  .results-count strong { color: var(--gold); }
+  .theme-btn { background: var(--bark); border: 1px solid var(--leather); border-radius: 6px; color: var(--fog); font-size: 16px; width: 38px; height: 38px; cursor: pointer; transition: background 0.15s, border-color 0.15s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .theme-btn:hover { border-color: var(--amber); background: var(--leather); }
+  /* ── Main ─────────────────────────────────────────── */
+  .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 60px; }
+  /* ── Destination grid ─────────────────────────────── */
+  .dest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+  .dest-card { background: var(--roast); border: 1px solid var(--bark); border-radius: 14px; overflow: hidden; transition: transform 0.2s, border-color 0.2s; animation: cardIn 0.4s ease both; display: flex; flex-direction: column; }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .dest-card:hover { transform: translateY(-4px); border-color: var(--leather); }
+  /* ── Card photo ───────────────────────────────────── */
+  .dest-photo-wrap { position: relative; width: 100%; height: 200px; overflow: hidden; background: var(--bark); flex-shrink: 0; }
+  .dest-photo { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+  .dest-card:hover .dest-photo { transform: scale(1.04); }
+  .dest-photo-error { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; background: linear-gradient(135deg, var(--bark), var(--roast)); }
+  .dest-state-pill { position: absolute; top: 12px; right: 12px; background: var(--amber); color: var(--espresso); font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 1px; padding: 4px 10px; border-radius: 20px; line-height: 1; }
+  .dest-category-tag { position: absolute; bottom: 12px; left: 12px; background: rgba(26,16,8,0.8); color: var(--gold); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 4px 10px; border-radius: 20px; backdrop-filter: blur(4px); border: 1px solid rgba(200,120,42,0.3); }
+  /* ── Card body ────────────────────────────────────── */
+  .dest-body { padding: 16px 18px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+  .dest-name { font-family: 'Bebas Neue', cursive; font-size: 26px; letter-spacing: 2px; color: var(--cream); line-height: 1.05; display: flex; align-items: center; gap: 10px; }
+  .dest-name-emoji { font-size: 22px; flex-shrink: 0; }
+  .dest-description { font-size: 13px; color: var(--fog); line-height: 1.7; }
+  .dest-section-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--amber); text-transform: uppercase; margin-bottom: 5px; }
+  .dest-places { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .dest-places li { font-size: 12px; color: var(--fog); padding-left: 14px; position: relative; line-height: 1.5; }
+  .dest-places li::before { content: '·'; position: absolute; left: 0; color: var(--amber); font-weight: 700; }
+  /* ── Card bottom row ──────────────────────────────── */
+  .dest-bottom { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--bark); display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
+  .dest-best-days { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+  .dest-best-days li { font-size: 11px; color: var(--smoke); padding-left: 12px; position: relative; }
+  .dest-best-days li::before { content: '▸'; position: absolute; left: 0; color: var(--caramel); font-size: 9px; top: 1px; }
+  .dest-cost-block { text-align: right; flex-shrink: 0; }
+  .dest-cost-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--amber); text-transform: uppercase; margin-bottom: 6px; }
+  .dest-cost-value { font-size: 12px; color: var(--fog); margin-bottom: 5px; white-space: nowrap; }
+  .cost-dots { display: flex; gap: 4px; justify-content: flex-end; }
+  .cost-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--bark); }
+  .cost-dot.filled-1 { background: var(--green-go); }
+  .cost-dot.filled-2 { background: var(--gold); }
+  .cost-dot.filled-3 { background: var(--amber); }
+  .cost-dot.filled-4 { background: var(--red-stop); }
+  /* ── Placeholder ──────────────────────────────────── */
+  .dest-placeholder { grid-column: 1 / -1; text-align: center; padding: 80px 24px; }
+  .placeholder-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.3; }
+  .placeholder-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--fog); margin-bottom: 8px; opacity: 0.6; }
+  .placeholder-sub { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--smoke); letter-spacing: 2px; opacity: 0.5; }
+  /* ── Light theme ──────────────────────────────────── */
+  body.light {
+    --espresso: #F8F1E0; --roast: #EDE3C8; --bark: #DDD3B0; --leather: #C4AA80;
+    --caramel: #7A4820; --amber: #B06018; --gold: #906010; --cream: #1A1008;
+    --fog: #3A2410; --smoke: #6A5030; --green-go: #3A8844; --red-stop: #C03838;
+  }
+  /* ── Footer ───────────────────────────────────────── */
+  .footer { background: var(--roast); border-top: 1px solid var(--bark); margin-top: 40px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; padding: 36px 24px 24px; }
+  .footer-top { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 28px; }
+  .footer-btn { background: var(--bark); border: 1px solid var(--leather); border-radius: 8px; color: var(--fog); font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1px; padding: 10px 20px; cursor: pointer; transition: border-color 0.2s, color 0.2s, background 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+  .footer-btn:hover { border-color: var(--amber); color: var(--cream); background: var(--leather); }
+  .footer-responsible { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--smoke); padding: 20px 0; border-top: 1px solid var(--bark); border-bottom: 1px solid var(--bark); line-height: 1.8; }
+  .footer-responsible strong { color: var(--fog); }
+  .footer-bottom { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; padding-top: 18px; }
+  .footer-legal-btn { background: none; border: none; color: var(--smoke); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.5px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 0; transition: color 0.2s; }
+  .footer-legal-btn:hover { color: var(--amber); }
+  .footer-copy { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--bark); }
+  /* ── Modals ────────────────────────────────────────── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box { background: var(--roast); border: 1px solid var(--leather); border-radius: 14px; max-width: 540px; width: 100%; max-height: 82vh; overflow-y: auto; position: relative; transform: translateY(20px); transition: transform 0.25s; }
+  .modal-overlay.open .modal-box { transform: translateY(0); }
+  .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--bark); display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 0; background: var(--roast); z-index: 1; }
+  .modal-title { font-family: 'Bebas Neue', cursive; font-size: 24px; letter-spacing: 2px; color: var(--cream); line-height: 1; }
+  .modal-close { background: var(--bark); border: 1px solid var(--leather); border-radius: 6px; color: var(--smoke); font-size: 14px; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: border-color 0.15s, color 0.15s; }
+  .modal-close:hover { border-color: var(--amber); color: var(--cream); }
+  .modal-body { padding: 22px 24px 28px; font-size: 13px; color: var(--fog); line-height: 1.75; }
+  .modal-body h4 { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--amber); text-transform: uppercase; margin: 18px 0 6px; }
+  .modal-body h4:first-child { margin-top: 0; }
+  .modal-body p { margin-bottom: 8px; }
+  .modal-body ul { padding-left: 18px; margin-bottom: 8px; }
+  .modal-body li { margin-bottom: 4px; }
+  .modal-badge-ok { display: inline-flex; align-items: center; gap: 7px; background: rgba(107,203,119,0.1); border: 1px solid rgba(107,203,119,0.3); border-radius: 20px; padding: 5px 14px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--green-go); letter-spacing: 1px; margin-bottom: 16px; }
+  /* ── Responsive ────────────────────────────────────── */
+  @media (max-width: 600px) {
+    /* ── Header ── */
+    .hero-content { padding: 14px 16px 10px; flex-direction: column; align-items: flex-start; gap: 4px; }
+    .logo-icon { width: 42px; height: 42px; font-size: 20px; }
+    .logo-main { font-size: 28px; letter-spacing: 2px; }
+    .logo-sub { font-size: 9px; letter-spacing: 2px; }
+    .hero-tagline { display: none; }
+    .hero-nav { padding: 8px 16px 12px; }
+
+    /* ── Filter: state select + results-count em coluna, theme btn separado ── */
+    .filter-inner { padding: 10px 16px; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .filter-label { display: none; }
+    .state-select { flex: 1 1 calc(100% - 46px); }
+    .results-count { order: 10; flex: 1 1 100%; margin-left: 0; padding-top: 2px; }
+    .theme-btn { flex: 0 0 auto; }
+
+    /* ── Main ── */
+    .main { padding: 16px 12px 48px; }
+
+    /* ── Cards: 1 coluna com foto menor ── */
+    .dest-grid { grid-template-columns: 1fr; gap: 16px; }
+    .dest-photo-wrap { height: 180px; }
+    .dest-body { padding: 14px 16px; gap: 10px; }
+    .dest-name { font-size: 22px; }
+    .dest-description { font-size: 13px; }
+
+    /* ── Card bottom: custo embaixo da lista de épocas ── */
+    .dest-bottom { grid-template-columns: 1fr; gap: 10px; }
+    .dest-cost-block { text-align: left; }
+    .cost-dots { justify-content: flex-start; }
+
+    /* ── Footer ── */
+    .footer-inner { padding: 24px 16px 16px; }
+    .footer-top { flex-direction: column; align-items: stretch; gap: 8px; }
+    .footer-btn { justify-content: center; }
+    .footer-bottom { gap: 12px; }
+  }
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<header class="hero">
+  <div class="hero-content">
+    <div class="logo-area">
+      <div class="logo-icon">🏍</div>
+      <div>
+        <div class="logo-main">Rolê<span>Moto</span></div>
+        <div class="logo-sub">Clima pra estrada · Café pra alma</div>
+      </div>
+    </div>
+    <div class="hero-tagline">Descubra o destino certo.<br><em>A estrada chama, o mapa espera.</em></div>
+  </div>
+  <div class="hero-nav">
+    <nav class="app-nav">
+      <a href="/" class="nav-tab">🏠 Início</a>
+      <a href="/clima" class="nav-tab">⚡ Clima</a>
+      <a href="/recomendados.html" class="nav-tab active">📍 Recomendados</a>
+    </nav>
+  </div>
+</header>
+
+<div class="filter-strip">
+  <div class="filter-inner">
+    <span class="filter-label">Estado</span>
+    <select class="state-select" id="stateSelect" onchange="filterDestinations()">
+      <option value="">— Todos os estados —</option>
+      <option value="SP">São Paulo (SP)</option>
+      <option value="RJ">Rio de Janeiro (RJ)</option>
+      <option value="MG">Minas Gerais (MG)</option>
+      <option value="PR">Paraná (PR)</option>
+      <option value="RS">Rio Grande do Sul (RS)</option>
+      <option value="SC">Santa Catarina (SC)</option>
+      <option value="BA">Bahia (BA)</option>
+      <option value="GO">Goiás (GO)</option>
+      <option value="MT">Mato Grosso (MT)</option>
+      <option value="MS">Mato Grosso do Sul (MS)</option>
+      <option value="ES">Espírito Santo (ES)</option>
+      <option value="PE">Pernambuco (PE)</option>
+      <option value="CE">Ceará (CE)</option>
+      <option value="AM">Amazonas (AM)</option>
+      <option value="PA">Pará (PA)</option>
+    </select>
+    <div class="results-count" id="resultsCount"></div>
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" title="Alternar tema">🌙</button>
+  </div>
+</div>
+
+<main class="main">
+  <div class="dest-grid" id="destGrid"></div>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <button class="footer-btn" onclick="openModal('modal-suporte')">🐛&nbsp; Suporte</button>
+      <button class="footer-btn" onclick="openModal('modal-seguranca')">🔒&nbsp; Segurança</button>
+      <button class="footer-btn" onclick="openModal('modal-docs')">📖&nbsp; Documentação</button>
+    </div>
+    <div class="footer-responsible">
+      Desenvolvido por <strong>Ryan Oliveira</strong><br>
+      <span style="font-size:10px;opacity:0.6">RolêMoto · Clima pra estrada · Café pra alma</span>
+    </div>
+    <div class="footer-bottom">
+      <button class="footer-legal-btn" onclick="openModal('modal-privacidade')">Política de Privacidade</button>
+      <span class="footer-copy">·</span>
+      <button class="footer-legal-btn" onclick="openModal('modal-avisos')">Avisos Legais</button>
+      <span class="footer-copy">·</span>
+      <span class="footer-copy">© 2025 RolêMoto</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Modal: Suporte -->
+<div class="modal-overlay" id="modal-suporte" onclick="closeModalOutside(event,'modal-suporte')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">🐛 Suporte</span>
+      <button class="modal-close" onclick="closeModal('modal-suporte')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>Encontrou um problema?</h4>
+      <p>Se você encontrou um bug, comportamento inesperado ou tem uma sugestão de melhoria, entre em contato.</p>
+      <h4>Contato</h4>
+      <p>📧 <strong>ryanoliveira.vm@gmail.com</strong></p>
+      <p style="font-size:11px;color:var(--smoke)">Respondemos em até 48 horas úteis.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Segurança -->
+<div class="modal-overlay" id="modal-seguranca" onclick="closeModalOutside(event,'modal-seguranca')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">🔒 Segurança</span>
+      <button class="modal-close" onclick="closeModal('modal-seguranca')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-badge-ok">✓ Página estática · Sem chamadas de API</div>
+      <h4>Esta página</h4>
+      <p>A página Recomendados é <strong>100% estática</strong>. Nenhuma chamada de API é feita. Todos os dados são locais.</p>
+      <h4>Armazenamento local</h4>
+      <p>Apenas o tema visual é salvo no <strong>localStorage</strong> do seu navegador.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Documentação -->
+<div class="modal-overlay" id="modal-docs" onclick="closeModalOutside(event,'modal-docs')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">📖 Documentação</span>
+      <button class="modal-close" onclick="closeModal('modal-docs')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>Página Recomendados</h4>
+      <p>Mostra destinos turísticos curados para motociclistas no Brasil. Filtre por estado para ver destinos com descrição, lugares para visitar, melhores épocas e estimativa de custo.</p>
+      <h4>Sem API</h4>
+      <p>Esta página não consome nenhuma API externa. Os dados são estáticos e atualizados manualmente.</p>
+      <h4>Página de Clima</h4>
+      <p>Acesse <strong>⚡ Clima</strong> no menu para ver previsão do tempo por cidade com ranking de melhores destinos do dia.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Privacidade -->
+<div class="modal-overlay" id="modal-privacidade" onclick="closeModalOutside(event,'modal-privacidade')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Política de Privacidade</span>
+      <button class="modal-close" onclick="closeModal('modal-privacidade')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>Dados coletados</h4>
+      <p>O RolêMoto <strong>não coleta, armazena nem processa nenhum dado pessoal</strong>.</p>
+      <h4>localStorage</h4>
+      <p>Apenas preferências de tema são salvas localmente no seu dispositivo. Esses dados nunca são enviados a nenhum servidor.</p>
+      <h4>LGPD</h4>
+      <p>Em conformidade com a Lei nº 13.709/2018. Por não tratar dados pessoais identificáveis, este serviço está isento das obrigações de tratamento previstas na lei.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Avisos Legais -->
+<div class="modal-overlay" id="modal-avisos" onclick="closeModalOutside(event,'modal-avisos')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Avisos Legais</span>
+      <button class="modal-close" onclick="closeModal('modal-avisos')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>Informações turísticas</h4>
+      <p>As descrições e recomendações são informativas e baseadas em pesquisa pública. Preços e condições podem variar. Verifique informações atualizadas antes de viajar.</p>
+      <h4>Segurança nas estradas</h4>
+      <p>Respeite as leis de trânsito. Use equipamentos de proteção adequados. O RolêMoto não se responsabiliza por acidentes ou danos decorrentes de viagens.</p>
+      <h4>Direitos autorais</h4>
+      <p>© 2025 Ryan Oliveira. Todos os direitos reservados. Reprodução parcial ou total apenas com autorização expressa.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const DESTINATIONS = [
+  // ── São Paulo ──────────────────────────────────────────
+  { state:'SP', name:'Campos do Jordão', emoji:'🏔', category:'Montanha',
+    photo:'https://tse4.mm.bing.net/th/id/OIP.u_knCmGDI9AOaHMBen-16gHaEo?rs=1&pid=ImgDetMain&o=7&rm=3',
+    description:'A Suíça brasileira encravada na Serra da Mantiqueira a 1.700 m de altitude. Vila Capivari é o coração turístico, com vida noturna agitada e restaurantes premiados. No inverno a temperatura pode cair a 0°C.',
+    places:['Vila Capivari','Morro do Elefante','Horto Florestal','Pico do Itapeva','Parque Estadual de Campos do Jordão'],
+    bestDays:['Junho a agosto — inverno serrano','Setembro e outubro — primavera'],
+    cost:'Médio a Alto', costLevel:3 },
+
+  { state:'SP', name:'Ilhabela', emoji:'🏝', category:'Praia',
+    photo:'https://guiaviajarmelhor.com.br/wp-content/uploads/2023/06/balsa-ilhabela-1200x800.jpg',
+    description:'Arquipélago com 360 cachoeiras, trilhas de Mata Atlântica e praias de água cristalina no Litoral Norte paulista. Chegando via Rodovia dos Tamoios (SP-099), o visual compensa qualquer curva.',
+    places:['Praia do Curral','Cachoeira do Gato','Pedra do Sino','Praia Grande do Sul','Veloso Beach'],
+    bestDays:['Março a junho — menos movimento','Setembro a novembro — tempo bom'],
+    cost:'Alto', costLevel:4 },
+
+  { state:'SP', name:'Ubatuba', emoji:'🌊', category:'Praia',
+    photo:'https://www.triptofollow.com/wp-content/uploads/2021/04/Melhores-praias-de-Ubatuba-Praia-do-Cedro-1536x1153.jpg',
+    description:'102 praias em 83 km de costa entre morros e Mata Atlântica. A Rodovia Rio-Santos (BR-101) oferece uma das melhores viagens de moto do estado — curvas, mar e floresta lado a lado.',
+    places:['Praia do Félix','Praia da Fortaleza','Parque Nacional Serra da Bocaina','Aquário de Ubatuba','Saco da Ribeira'],
+    bestDays:['Fevereiro a março — ressaca reduzida','Outubro a novembro — ótimo clima'],
+    cost:'Médio', costLevel:2 },
+
+  { state:'SP', name:'Brotas', emoji:'🧗', category:'Aventura',
+    photo:'https://offloadmedia.feverup.com/saopaulosecreto.com/wp-content/uploads/2022/11/13085441/brotas-1.jpg',
+    description:'Capital brasileira do ecoturismo e esportes radicais. Cachoeiras, corredeiras e tirolesas em cenário de Mata Atlântica. Ótima rota de moto saindo de São Paulo pela SP-225.',
+    places:['Cachoeira do Avencal','Corredeira Encantada','Parque das Corredeiras','Cachoeira do Paredão','Trilha Véu de Noiva'],
+    bestDays:['Março a outubro — nível de água ideal para rafting','Dezembro a fevereiro — cheias intensas'],
+    cost:'Médio', costLevel:2 },
+
+  { state:'SP', name:'Cunha', emoji:'🌄', category:'Montanha',
+    photo:'https://saopaulosemmesmice.com.br/wp-content/uploads/2022/11/cunha-sp-63-768x512.jpg',
+    description:'Município serrano a 870 m na Serra da Bocaina, conhecido pela cerâmica artesanal e pousadas rústicas. Ótima parada na rota entre São Paulo e Paraty (RJ).',
+    places:['Ateliês de cerâmica','Mirante do Cristo','Cachoeira do Moinho','Serra da Bocaina','Centro histórico'],
+    bestDays:['Abril a setembro — clima ameno e seco','Janeiro a março — risco de neblina'],
+    cost:'Baixo a Médio', costLevel:2 },
+
+  { state:'SP', name:'Holambra', emoji:'🌷', category:'Cultural',
+    photo:'https://visitesocorrosp.com.br/content/images/2024/04/Guia-Holambra-SP.jpg',
+    description:'Cidade holandesa no interior paulista, famosa pela Expoflora e campos de flores. Moinhos de vento e culinária europeia. A 90 km de Campinas pela SP-107.',
+    places:['Expoflora (set–out)','Moinho de Vento','Campos de flores','Museu Histórico de Holambra','Fábrica de queijos holandeses'],
+    bestDays:['Setembro a outubro — Expoflora em flor','Maio a agosto — clima ameno'],
+    cost:'Baixo', costLevel:1 },
+
+  { state:'SP', name:'São Sebastião', emoji:'⛵', category:'Praia',
+    photo:'https://offloadmedia.feverup.com/saopaulosecreto.com/wp-content/uploads/2025/01/15161110/sao-sebastiao.jpg',
+    description:'Cidade histórica do Litoral Norte de frente para Ilhabela. O Canal de São Sebastião oferece paisagem espetacular para quem passa de moto pela beira-mar.',
+    places:['Barra do Una','Praia de Boiçucanga','Centro histórico','Ferry para Ilhabela','Engenho d\'Água'],
+    bestDays:['Março a junho — praias tranquilas','Setembro a novembro — sol garantido'],
+    cost:'Médio', costLevel:2 },
+
+  // ── Rio de Janeiro ─────────────────────────────────────
+  { state:'RJ', name:'Paraty', emoji:'🏛', category:'Histórico',
+    photo:'https://cdn.getyourguide.com/img/location/5463321f0e922.jpeg/62.jpg',
+    description:'Patrimônio da Humanidade (UNESCO) com centro colonial impecavelmente preservado. Rodeada por baías e Mata Atlântica. A Rio-Santos (BR-101) é uma das estradas mais bonitas do Brasil para moto.',
+    places:['Centro histórico tombado','Praia do Sono','Cachoeira do Tobogã','Festa Literária FLIP','Baía de Paraty'],
+    bestDays:['Março a junho — sem chuvas intensas','Agosto a novembro — melhor clima'],
+    cost:'Médio a Alto', costLevel:3 },
+
+  { state:'RJ', name:'Búzios', emoji:'🌅', category:'Praia',
+    photo:'https://picsum.photos/seed/buziosrj/600/300',
+    description:'O Saint-Tropez brasileiro com 23 praias distintas, de agitadas a desertas. Boa gastronomia e vida noturna. Chegando pela RJ-106, a paisagem é impecável.',
+    places:['Rua das Pedras','Praia João Fernandes','Praia da Ferradura','Orla Bardot','Cruzeiros pelas praias'],
+    bestDays:['Dezembro a março — verão vibrante','Abril a agosto — menor movimento'],
+    cost:'Alto', costLevel:4 },
+
+  { state:'RJ', name:'Petrópolis', emoji:'👑', category:'Histórico',
+    photo:'https://picsum.photos/seed/petropolis/600/300',
+    description:'A Cidade Imperial a 800 m na Serra dos Órgãos. Museu Imperial e palácio de Dom Pedro II em uma atmosfera europeia única. A subida pela RJ-071 é curvilínea e desafiadora — ótima para moto.',
+    places:['Museu Imperial','Catedral São Pedro de Alcântara','Palácio de Cristal','Quitandinha','Casa de Santos Dumont'],
+    bestDays:['Abril a outubro — clima ameno e seco','Dezembro a fevereiro — pode ser frio'],
+    cost:'Médio', costLevel:2 },
+
+  { state:'RJ', name:'Teresópolis', emoji:'⛰', category:'Natureza',
+    photo:'https://picsum.photos/seed/teresopolis/600/300',
+    description:'Porta de entrada do Parque Nacional da Serra dos Órgãos com trilhas para o Dedo de Deus e o Nariz do Frade. Clima fresco e cozinha serrana. A RJ-116 oferece visual espetacular.',
+    places:['Parque Nacional Serra dos Órgãos','Dedo de Deus','Mirante do Soberbo','Jardim de Alah','Vale dos Açudes'],
+    bestDays:['Maio a setembro — trilhas secas','Outubro a novembro — boa temperatura'],
+    cost:'Médio', costLevel:2 },
+
+  { state:'RJ', name:'Visconde de Mauá', emoji:'💧', category:'Natureza',
+    photo:'https://picsum.photos/seed/viscondemaua/600/300',
+    description:'Vale bucólico entre RJ e MG com cachoeiras, rios cristalinos e chalés rústicos. A estrada de acesso tem curvas fechadas — imperdível para motociclistas que curtem desafios.',
+    places:['Cachoeira Véu de Noiva','Vale da Maromba','Rio Preto','Cachoeira da Escorregadeira','Mirante da Pedra Selada'],
+    bestDays:['Abril a outubro — rios com nível ideal','Dezembro a fevereiro — risco de alagamentos'],
+    cost:'Médio', costLevel:2 },
+
+  // ── Minas Gerais ───────────────────────────────────────
+  { state:'MG', name:'Ouro Preto', emoji:'⛪', category:'Histórico',
+    photo:'https://picsum.photos/seed/ouropreto/600/300',
+    description:'Patrimônio Mundial da UNESCO. A antiga Vila Rica tem uma das maiores coleções de arte barroca do mundo. Ladeiras de pedra, igrejas douradas e cachaças artesanais. A MG-262 entre Mariana e Ouro Preto é um clássico.',
+    places:['Igreja Nossa Sra. do Pilar','Museu da Inconfidência','Mina do Chico Rei','Igreja de São Francisco de Assis','Cachoeira das Andorinhas'],
+    bestDays:['Abril a agosto — Semana Santa grandiosa','Setembro a novembro — clima ótimo, menos turistas'],
+    cost:'Médio', costLevel:2 },
+
+  { state:'MG', name:'Tiradentes', emoji:'🎨', category:'Histórico',
+    photo:'https://picsum.photos/seed/tiradentes/600/300',
+    description:'Cidade colonial intimista com excelente gastronomia mineira e lojas de artesanato. A MG-338 é curvilínea e muito apreciada por motociclistas. Menor e mais tranquila que Ouro Preto.',
+    places:['Igreja Matriz Santo Antônio','Serra de São José','Museu Padre Toledo','Trem a vapor até São João del-Rei','Rua Direita — gastronomia'],
+    bestDays:['Maio a agosto — Festival de Gastronomia (ago)','Setembro a novembro — clima seco'],
+    cost:'Médio a Alto', costLevel:3 },
+
+  { state:'MG', name:'Monte Verde', emoji:'🌲', category:'Montanha',
+    photo:'https://picsum.photos/seed/monteverde/600/300',
+    description:'Distrito de Camanducaia a 1.750 m com visual europeu, chocolate artesanal e queijos. Inverno com geadas e possibilidade de neve. Rota clássica saindo de São Paulo pela Fernão Dias.',
+    places:['Pico do Selado','Cachoeira do Platô','Chocolate artesanal local','Vila de Monte Verde','Fazendas com queijo serrano'],
+    bestDays:['Junho a agosto — temperatura próxima a 0°C','Setembro e outubro — menos frio, mais cores'],
+    cost:'Médio', costLevel:2 },
+
+  { state:'MG', name:'Diamantina', emoji:'💎', category:'Histórico',
+    photo:'https://picsum.photos/seed/diamantina/600/300',
+    description:'Patrimônio da UNESCO no Vale do Jequitinhonha, cidade natal de Juscelino Kubitschek. Ruas coloniais bem preservadas. A rota pela BR-259 é longa mas recompensadora.',
+    places:['Casa de Chica da Silva','Catedral Metropolitana','Mercado Municipal','Grutas Rei do Mato','Rio Jequitinhonha'],
+    bestDays:['Abril a outubro — seco e agradável','Julho — Vesperata (concertos nas janelas)'],
+    cost:'Baixo a Médio', costLevel:1 },
+
+  { state:'MG', name:'Serra da Canastra', emoji:'🦁', category:'Natureza',
+    photo:'https://picsum.photos/seed/serracanastra/600/300',
+    description:'Parque Nacional com a nascente do Rio São Francisco, cachoeiras monumentais e cerrado intocado. Queijo Canastra produzido nas fazendas ao redor. A MGC-050 cruza o planalto com visuais imensos.',
+    places:['Cachoeira Casca D\'Anta','Nascente do Rio São Francisco','Chapadão da Canastra','Fazendas com queijo canastra','Trilhas no cerrado'],
+    bestDays:['Maio a setembro — seca, rios vigorosos','Dezembro a fevereiro — vegetação verde intensa'],
+    cost:'Baixo', costLevel:1 },
+
+  // ── Paraná ─────────────────────────────────────────────
+  { state:'PR', name:'Morretes', emoji:'🚂', category:'Cultural',
+    photo:'https://picsum.photos/seed/morretes/600/300',
+    description:'Cidade histórica no Litoral do Paraná famosa pelo Barreado e pelo trem que desce a Serra do Mar. A BR-277 da Serra do Mar é uma das estradas mais impressionantes do Brasil para motos.',
+    places:['Serra do Mar (trem Curitiba–Morretes)','Rio Nhundiaquara','Centro histórico','Cachoeira do Marumbi','Estação Ferroviária'],
+    bestDays:['Março a junho — menos chuva na serra','Setembro a novembro — florestas exuberantes'],
+    cost:'Baixo', costLevel:1 },
+
+  { state:'PR', name:'Foz do Iguaçu', emoji:'🌊', category:'Natureza',
+    photo:'https://picsum.photos/seed/foziguacu/600/300',
+    description:'As Cataratas do Iguaçu são Patrimônio Natural da UNESCO e maravilha natural do mundo. 275 quedas em 2,7 km. A rota pela BR-277 cruzando o Paraná é um clássico de viagens longas de moto.',
+    places:['Cataratas do Iguaçu (lado brasileiro)','Parque das Aves','Garganta do Diabo (lado argentino)','Itaipu Binacional','Marco das 3 fronteiras'],
+    bestDays:['Março a novembro — volume de água equilibrado','Janeiro a fevereiro — volume máximo'],
+    cost:'Médio', costLevel:2 },
+
+  { state:'PR', name:'Prudentópolis', emoji:'💦', category:'Aventura',
+    photo:'https://picsum.photos/seed/prudentopolis/600/300',
+    description:'Capital brasileira das cachoeiras com mais de 200 quedas catalogadas e forte influência ucraniana. As estradas de terra para as cachoeiras são desafio e diversão para trilheiros.',
+    places:['Cachoeira São Francisco','Cachoeira Esperança','Igreja Greco-Católica Ucraniana','Cachoeira Palmeirinha','Artesanato ucraniano'],
+    bestDays:['Setembro a novembro — volume ideal','Dezembro a fevereiro — risco de estradas encharcadas'],
+    cost:'Baixo', costLevel:1 },
+
+  { state:'PR', name:'Lapa', emoji:'🏰', category:'Histórico',
+    photo:'https://picsum.photos/seed/lapapr/600/300',
+    description:'Cidade histórica no Caminho do Viamão com arquitetura colonial bem preservada e o famoso Cerco da Lapa (1894). A BR-476 entre Curitiba e Lapa é uma ótima rota curta de moto.',
+    places:['Casarão do Cerco da Lapa','Gruta Nossa Sra. do Monserrate','Centro histórico tombado','Teatro São João','Museu de Armas'],
+    bestDays:['Março a outubro — clima temperado estável','Julho — Festa Histórica do Cerco'],
+    cost:'Baixo', costLevel:1 },
+
+  // ── Santa Catarina ─────────────────────────────────────
+  { state:'SC', name:'Urubici', emoji:'❄', category:'Montanha',
+    photo:'https://picsum.photos/seed/urubici/600/300',
+    description:'Capital catarinense do frio com temperaturas negativas e geadas frequentes. Cercada por pinheiros e cânions. A SC-439 desce a serra com curvas memoráveis.',
+    places:['Morro da Igreja','Pedra Furada','Rio Canoas','Cascata Véu de Noiva','Parque Nacional de São Joaquim'],
+    bestDays:['Junho a agosto — neve e geadas possíveis','Setembro a novembro — campos floridos'],
+    cost:'Baixo a Médio', costLevel:1 },
+
+  { state:'SC', name:'São Joaquim', emoji:'🍎', category:'Montanha',
+    photo:'https://picsum.photos/seed/saojoaquimsc/600/300',
+    description:'Cidade mais fria do Brasil a 1.353 m de altitude. Maçãs, vinhos de altitude e neve no inverno. O Parque Nacional tem as maiores araucárias da região serrana.',
+    places:['Parque Nacional de São Joaquim','Pomares de maçã abertos ao público','Vinícola Villa Francioni','Mirante Morro da Pedra','Pinheiros centenários'],
+    bestDays:['Junho a agosto — frio extremo (neve!)','Outubro a novembro — maçãs em floração'],
+    cost:'Baixo', costLevel:1 },
+
+  { state:'SC', name:'Blumenau', emoji:'🍺', category:'Cultural',
+    photo:'https://picsum.photos/seed/blumenau/600/300',
+    description:'A mais alemã das cidades brasileiras. Arquitetura enxaimel, Oktoberfest (maior fora da Alemanha) e excelente cerveja artesanal. Boa rota pelas colônias alemãs do Vale do Itajaí.',
+    places:['Rua XV de Novembro','Museu da Família Colonial','Parque Ecológico Spitzkopf','Oktoberfest (outubro)','Cervejarias artesanais'],
+    bestDays:['Outubro — Oktoberfest','Abril a setembro — menos chuva no Vale'],
+    cost:'Médio', costLevel:2 },
+
+  { state:'SC', name:'Florianópolis', emoji:'🏄', category:'Praia',
+    photo:'https://picsum.photos/seed/florianopolis/600/300',
+    description:'A Ilha da Magia com 42 praias distintas. A SC-401 ao norte e SC-406 ao sul são estradas costeiras impressionantes para quem visita de moto.',
+    places:['Lagoa da Conceição','Praia de Jurerê Internacional','Morro das Pedras','Mercado Público','Ribeirão da Ilha'],
+    bestDays:['Novembro a março — verão','Abril e maio — ótimo para surfar, menos turismo'],
+    cost:'Médio a Alto', costLevel:3 },
+
+  // ── Rio Grande do Sul ──────────────────────────────────
+  { state:'RS', name:'Gramado', emoji:'🍫', category:'Cultural',
+    photo:'https://picsum.photos/seed/gramado/600/300',
+    description:'A mais europeia das cidades brasileiras, com arquitetura bávara, chocolate artesanal e o Festival de Cinema. No inverno, neve ocasional. A RS-235 entre Canela e Gramado é imperdível.',
+    places:['Rua Coberta','Lago Negro','Mini Mundo','Snowland','Fábricas de chocolate'],
+    bestDays:['Junho a setembro — frio europeu','Dezembro — Natal Luz imperdível'],
+    cost:'Médio a Alto', costLevel:3 },
+
+  { state:'RS', name:'Canela', emoji:'🌲', category:'Natureza',
+    photo:'https://picsum.photos/seed/canelaRS/600/300',
+    description:'Vizinha de Gramado, mais tranquila e cheia de natureza. A Cascata do Caracol (131 m de queda) e o Parque do Caracol são os grandes atrativos. Trilhas e tirolesas completam a aventura.',
+    places:['Cascata do Caracol','Parque do Caracol','Mundo a Vapor','Alpen Park','Catedral de Pedra'],
+    bestDays:['Qualquer época — natureza bonita o ano todo','Junho a agosto — frio mais intenso'],
+    cost:'Médio', costLevel:2 },
+
+  { state:'RS', name:'Bento Gonçalves', emoji:'🍷', category:'Cultural',
+    photo:'https://picsum.photos/seed/bentogoncalves/600/300',
+    description:'Capital brasileira do vinho no Vale dos Vinhedos. Vinícolas premiadas, cantinas familiares italianas e a Festa da Uva. A RS-444 corta os vinhedos com visual de cartão postal.',
+    places:['Vale dos Vinhedos','Pizzato Vinhos','Miolo Wine Group','Caminho de Pedra (igrejas italianas)','Festa da Uva (fevereiro)'],
+    bestDays:['Fevereiro — Festa da Uva','Março a maio — colheita da uva','Setembro a novembro — parreiras floridas'],
+    cost:'Médio', costLevel:2 },
+
+  { state:'RS', name:'Cambará do Sul', emoji:'🏞', category:'Natureza',
+    photo:'https://picsum.photos/seed/cambaradosul/600/300',
+    description:'Município com os maiores cânions da América do Sul. Itaimbezinho (720 m de profundidade) e Cânion Fortaleza são de tirar o fôlego. Fica a 1.075 m de altitude. Acesso pela RS-020.',
+    places:['Cânion Itaimbezinho','Cânion Fortaleza','Pedra do Segredo','Cascata da Ronda','Parque Nacional Aparados da Serra'],
+    bestDays:['Março a novembro — neblina matinal linda','Junho a agosto — frio intenso, paisagem única'],
+    cost:'Baixo a Médio', costLevel:1 },
+
+  // ── Bahia ──────────────────────────────────────────────
+  { state:'BA', name:'Chapada Diamantina', emoji:'💎', category:'Natureza',
+    photo:'https://picsum.photos/seed/chapadabahia/600/300',
+    description:'Parque Nacional com grutas, cachoeiras, cânions e morros de quartzito. Lençóis é a cidade base. Trekking ao Morro do Pai Inácio oferece uma das vistas mais bonitas do Brasil.',
+    places:['Cachoeira do Buracão','Gruta da Lapa Doce','Morro do Pai Inácio','Cachoeira da Fumaça','Poço Encantado'],
+    bestDays:['Maio a setembro — seca, rios com nível ideal','Outubro a dezembro — cachoeiras no auge'],
+    cost:'Baixo a Médio', costLevel:1 },
+
+  { state:'BA', name:'Itacaré', emoji:'🏄', category:'Praia',
+    photo:'https://picsum.photos/seed/itacare/600/300',
+    description:'Cachoeiras na floresta e praias de surf de classe mundial, tudo conectado por trilhas de Mata Atlântica. Estilo de vida descontraído típico do sul da Bahia. A BA-001 é sinuosa e deslumbrante.',
+    places:['Praia de Tiririca','Praia da Concha','Cachoeira da Engenhoca','Trilha das Praias','Praia da Ribeira'],
+    bestDays:['Março a julho — ondas perfeitas para surf','Setembro a novembro — praias menos cheias'],
+    cost:'Médio', costLevel:2 },
+
+  { state:'BA', name:'Morro de São Paulo', emoji:'🌴', category:'Praia',
+    photo:'https://picsum.photos/seed/morrosaopaulo/600/300',
+    description:'Ilha sem carros com praias numeradas e famosas. A balsa saindo de Valença é parte da aventura. Segunda e Terceira Praias são impecáveis e difíceis de esquecer.',
+    places:['Segunda Praia','Terceira Praia','Farol do Morro','Piscinas naturais da Quarta Praia','Fortaleza histórica'],
+    bestDays:['Setembro a março — menos chuva','Julho — inverno baiano, poucas chuvas'],
+    cost:'Médio a Alto', costLevel:3 },
+
+  { state:'BA', name:'Praia do Forte', emoji:'🐢', category:'Praia',
+    photo:'https://picsum.photos/seed/praiadoforte/600/300',
+    description:'Projeto Tamar de proteção de tartarugas marinhas e bela praia do litoral norte baiano. A Linha Verde (BA-099) de Salvador até Praia do Forte é excelente para moto.',
+    places:['Projeto Tamar','Castelo Garcia d\'Ávila (ruínas)','Lagoa Timeantube','Reef de corais','Vila com restaurantes na areia'],
+    bestDays:['Setembro a março — tartarugas desovando','Junho a agosto — inverno seco e agradável'],
+    cost:'Médio a Alto', costLevel:3 },
+
+  // ── Goiás ──────────────────────────────────────────────
+  { state:'GO', name:'Pirenópolis', emoji:'🎭', category:'Histórico',
+    photo:'https://picsum.photos/seed/pirenopolis/600/300',
+    description:'Cidade histórica goiana famosa pelas Cavalhadas de Pentecostes e cachoeiras próximas. Ruas coloniais de pedra e ateliês de arte. A GO-431 oferece visual espetacular do Cerrado.',
+    places:['Cavalhadas (Pentecostes)','Cachoeira das Abóboras','Santuário de Vida Silvestre','Igreja Nossa Sra. do Rosário','Cachoeira do Lázaro'],
+    bestDays:['Maio a setembro — seco e festivo','Pentecostes (mai/jun) — Cavalhadas únicas no mundo'],
+    cost:'Baixo a Médio', costLevel:1 },
+
+  { state:'GO', name:'Alto Paraíso de Goiás', emoji:'🔮', category:'Natureza',
+    photo:'https://picsum.photos/seed/altoparaiso/600/300',
+    description:'Portal da Chapada dos Veadeiros, área de quartzito mais antiga do planeta. Cachoeiras cristalinas, trilhas e uma aura mística que atrai viajantes do mundo todo.',
+    places:['Parque Nacional Chapada dos Veadeiros','Cachoeira de São Bento','Carioquinhas','Vale da Lua','São Jorge (vilarejo místico)'],
+    bestDays:['Maio a outubro — rios transparentes, trilhas praticáveis','Julho — menor visitação, melhor clima'],
+    cost:'Baixo', costLevel:1 },
+
+  { state:'GO', name:'Caldas Novas', emoji:'♨', category:'Aventura',
+    photo:'https://picsum.photos/seed/caldasnovas/600/300',
+    description:'Capital das águas quentes do Brasil com a maior concentração de parques aquáticos termais do país. Temperatura da água entre 37°C e 51°C naturalmente.',
+    places:['Parque das Fontes Quentes','Hot Park (resort)','Lago Corumbá','Parque Estadual Serra de Caldas Novas','Balneários termais'],
+    bestDays:['Qualquer época — fontes quentes o ano todo','Abril a setembro — clima mais agradável para a moto'],
+    cost:'Médio', costLevel:2 },
+
+  // ── Espírito Santo ─────────────────────────────────────
+  { state:'ES', name:'Domingos Martins', emoji:'🌿', category:'Cultural',
+    photo:'https://picsum.photos/seed/domingosmartins/600/300',
+    description:'Colônia alemã a 900 m na Serra do Espírito Santo. Clima suave, cachaças e vinhos locais. A ES-164 tem curvas memoráveis descendo em direção à Grande Vitória.',
+    places:['Casa Lambert (museu)','Rua de Pedra','Parque Estadual de Pedra Azul','Cachoeiras locais','Fazendas coloniais'],
+    bestDays:['Abril a setembro — frescor serrano agradável','Outubro a novembro — flores locais'],
+    cost:'Baixo a Médio', costLevel:1 },
+
+  { state:'ES', name:'Pedra Azul', emoji:'🪨', category:'Natureza',
+    photo:'https://picsum.photos/seed/pedraazulES/600/300',
+    description:'O monolito de granito a 1.822 m muda de cor com a luz do sol. Trilhas no Parque Estadual circundam a pedra. A ES-164 é a rota favorita dos motoqueiros capixabas.',
+    places:['Trilha da Pedra Azul','Piscinas naturais do Rio Satinga','Circuito turístico do café','Escalada esportiva','Pousadas de charme'],
+    bestDays:['Março a agosto — pedra com tons azuis intensos','Dezembro a fevereiro — risco de neblina'],
+    cost:'Médio', costLevel:2 },
+
+  // ── Ceará ──────────────────────────────────────────────
+  { state:'CE', name:'Jericoacoara', emoji:'🏜', category:'Praia',
+    photo:'https://picsum.photos/seed/jericoacoara/600/300',
+    description:'Uma das mais belas praias do mundo segundo a National Geographic. Dunas, lagoas azuis e o pôr do sol na Pedra Furada são experiências únicas.',
+    places:['Pedra Furada (pôr do sol)','Lagoa Azul','Lagoa do Paraíso','Dunas da Tanga','Lagoa de Jijoca'],
+    bestDays:['Julho a dezembro — ventos constantes para kitesurf','Setembro a janeiro — sol garantido'],
+    cost:'Médio a Alto', costLevel:3 },
+
+  { state:'CE', name:'Canoa Quebrada', emoji:'🏖', category:'Praia',
+    photo:'https://picsum.photos/seed/canoaquebrada/600/300',
+    description:'Falésia de 30 m com areia vermelha e mar azul-turquesa. A CE-040 de Fortaleza a Aracati é uma das estradas mais bonitas do litoral nordestino de moto.',
+    places:['Falésia vermelha','Broadway (bares e restaurantes)','Buggy pelas dunas','Lagoa das Caueiras','Praia de Majorlândia'],
+    bestDays:['Julho a dezembro — ventos para kitesurf','Agosto a setembro — ótimo clima'],
+    cost:'Baixo a Médio', costLevel:1 },
+
+  { state:'CE', name:'Guaramiranga', emoji:'🌳', category:'Montanha',
+    photo:'https://picsum.photos/seed/guaramiranga/600/300',
+    description:'A Suíça cearense a 1.000 m na Serra de Baturité com clima ameno e plantações de café. Famosa pelo Festival de Jazz & Blues de fevereiro. O caminho pela CE-065 é espetacular.',
+    places:['Mirante do Pico Alto','Festival de Jazz & Blues (fevereiro)','Cafezais da Serra','Parque das Trilhas','Rota do Café'],
+    bestDays:['Fevereiro — Festival de Jazz','Março a julho — serras verdes'],
+    cost:'Baixo', costLevel:1 },
+
+  // ── Pernambuco ─────────────────────────────────────────
+  { state:'PE', name:'Fernando de Noronha', emoji:'🐬', category:'Praia',
+    photo:'https://picsum.photos/seed/noronha/600/300',
+    description:'Arquipélago oceânico Patrimônio Natural da UNESCO com a mais alta transparência de água do Brasil. Golfinhos, tartarugas e praias intocadas. Acesso apenas por avião.',
+    places:['Baía do Sancho','Baía dos Golfinhos','Pico do Morro do Pico','Praia do Leão','Mergulho nas piscinas naturais'],
+    bestDays:['Agosto a março — visibilidade máxima na água','Setembro a fevereiro — menos chuva'],
+    cost:'Alto', costLevel:4 },
+
+  { state:'PE', name:'Porto de Galinhas', emoji:'🐟', category:'Praia',
+    photo:'https://picsum.photos/seed/portodegalinhas/600/300',
+    description:'Piscinas naturais formadas por recifes de corais a 60 km de Recife. Jangadas levam até as piscinas onde peixes coloridos nadam entre as pernas. A PE-009 é boa rota de moto.',
+    places:['Piscinas naturais de corais','Praia de Muro Alto','Manguezal (passeio de barco)','Praia Cupe','Carneiros (a 30 km)'],
+    bestDays:['Setembro a março — piscinas limpas, maré baixa','Dezembro a março — verão'],
+    cost:'Médio', costLevel:2 },
+
+  // ── Mato Grosso do Sul ─────────────────────────────────
+  { state:'MS', name:'Bonito', emoji:'🐟', category:'Natureza',
+    photo:'https://picsum.photos/seed/bonitoms/600/300',
+    description:'Capital mundial do ecoturismo de água doce. Rios com visibilidade de até 50 m, grutas subaquáticas e mergulho com peixes coloridos. A flutuação no Rio da Prata é a experiência máxima.',
+    places:['Flutuação Rio da Prata','Gruta do Lago Azul','Nascente Azul','Abismo Anhumas (rapel + mergulho)','Boca da Onça (trilha)'],
+    bestDays:['Julho a setembro — máxima visibilidade','Outubro a dezembro — ótimo para flutuação'],
+    cost:'Alto', costLevel:4 },
+
+  { state:'MS', name:'Corumbá', emoji:'🐊', category:'Natureza',
+    photo:'https://picsum.photos/seed/corumba/600/300',
+    description:'Portal de entrada para o Pantanal Sul, a maior planície alagável do mundo. Safari em fazendas e avistamento de jacarés, onças e capivaras em seu habitat natural.',
+    places:['Safari no Pantanal','Porto Geral do Rio Paraguai','Morro do Urubu','Fazendas abertas ao turismo','Fronteira com a Bolívia'],
+    bestDays:['Abril a setembro — seca, fauna concentrada','Outubro a novembro — aves migratórias'],
+    cost:'Médio', costLevel:2 },
+
+  // ── Mato Grosso ────────────────────────────────────────
+  { state:'MT', name:'Chapada dos Guimarães', emoji:'🏜', category:'Natureza',
+    photo:'https://picsum.photos/seed/chapadaguimaraes/600/300',
+    description:'Parque Nacional com cânions, cachoeiras e o Centro Geodésico da América do Sul. A Véu de Noiva tem 86 m de queda. A MT-251 de Cuiabá tem visual de planalto espetacular.',
+    places:['Véu de Noiva (86 m de queda)','Mirante do Centro Geodésico','Cidade de Pedra','Gruta da Lagoa Azul','Morro de São Jerônimo'],
+    bestDays:['Abril a setembro — seca, cachoeiras cheias','Setembro a novembro — temperaturas agradáveis'],
+    cost:'Baixo a Médio', costLevel:1 },
+
+  // ── Amazonas ───────────────────────────────────────────
+  { state:'AM', name:'Manaus', emoji:'🌿', category:'Natureza',
+    photo:'https://picsum.photos/seed/manaus/600/300',
+    description:'Metrópole amazônica com o Teatro Amazonas e o Encontro das Águas do Rio Negro e Solimões. Destino de moto para quem faz a rota Manaus–Boa Vista (BR-174).',
+    places:['Teatro Amazonas','Encontro das Águas','Museu do Seringal','Lago Janauari (vitórias-régias)','Comunidades ribeirinhas'],
+    bestDays:['Junho a outubro — menor risco de fechamento de estradas','Novembro a maio — cheia, paisagem aquática única'],
+    cost:'Médio', costLevel:2 },
+
+  { state:'AM', name:'Presidente Figueiredo', emoji:'💦', category:'Natureza',
+    photo:'https://picsum.photos/seed/presidentefigueiredo/600/300',
+    description:'Terra das cachoeiras e cavernas a 107 km de Manaus pela AM-010. Mais de 100 cachoeiras catalogadas. Ótima rota de moto no fim de semana saindo de Manaus.',
+    places:['Cachoeira Iracema','Gruta da Judéia','Pedra da Cabocla','Cachoeira Santuário','Mirante da AM-010'],
+    bestDays:['Junho a outubro — estradas melhores e cachoeiras acessíveis','Outubro a março — cachoeiras mais volumosas'],
+    cost:'Baixo', costLevel:1 },
+
+  // ── Pará ───────────────────────────────────────────────
+  { state:'PA', name:'Alter do Chão', emoji:'🏝', category:'Praia',
+    photo:'https://picsum.photos/seed/alterdochao/600/300',
+    description:'O Caribe amazônico com praias de água doce de areia branca no Rio Tapajós. O Lago Verde é de um azul-turquesa impossível de imaginar no meio da floresta. Acesso pela BR-163.',
+    places:['Ilha do Amor','Lago Verde','Praia da Orla de Alter','Aldeia Borari','Festival do Çairé (setembro)'],
+    bestDays:['Agosto a dezembro — praias secas no auge','Setembro — Festival do Çairé'],
+    cost:'Baixo a Médio', costLevel:1 },
+
+  { state:'PA', name:'Belém', emoji:'🦀', category:'Cultural',
+    photo:'https://picsum.photos/seed/belem/600/300',
+    description:'Capital do Pará onde a Amazônia encontra o Atlântico. Ver-o-Peso (maior mercado a céu aberto da América Latina) e a gastronomia do tacacá e açaí são experiências únicas.',
+    places:['Mercado Ver-o-Peso','Basílica de Nazaré','Mangal das Garças','Estação das Docas','Museu Emílio Goeldi'],
+    bestDays:['Julho a dezembro — menos chuva','Outubro — Círio de Nazaré (maior procissão do Brasil)'],
+    cost:'Baixo a Médio', costLevel:1 },
+];
+
+function getCostDots(costLevel) {
+  return [1,2,3,4].map(i => {
+    const cls = i <= costLevel ? `filled-${costLevel}` : '';
+    return `<div class="cost-dot ${cls}"></div>`;
+  }).join('');
+}
+
+function renderCard(d, idx) {
+  const delay = Math.min(idx * 60, 600);
+  return `
+    <div class="dest-card" style="animation-delay:${delay}ms">
+      <div class="dest-photo-wrap">
+        <img class="dest-photo" src="${d.photo}" alt="${d.name}"
+             loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="dest-photo-error" style="display:none">${d.emoji}</div>
+        <div class="dest-state-pill">${d.state}</div>
+        <div class="dest-category-tag">${d.category}</div>
+      </div>
+      <div class="dest-body">
+        <div class="dest-name">
+          <span class="dest-name-emoji">${d.emoji}</span>
+          ${d.name}
+        </div>
+        <p class="dest-description">${d.description}</p>
+        <div>
+          <div class="dest-section-label">Lugares para visitar</div>
+          <ul class="dest-places">
+            ${d.places.map(p => `<li>${p}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="dest-bottom">
+          <div>
+            <div class="dest-section-label">Melhores épocas</div>
+            <ul class="dest-best-days">
+              ${d.bestDays.map(bd => `<li>${bd}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="dest-cost-block">
+            <div class="dest-cost-label">Custo</div>
+            <div class="dest-cost-value">${d.cost}</div>
+            <div class="cost-dots">${getCostDots(d.costLevel)}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function filterDestinations() {
+  const state = document.getElementById('stateSelect').value;
+  const grid = document.getElementById('destGrid');
+  const countEl = document.getElementById('resultsCount');
+
+  const filtered = state
+    ? DESTINATIONS.filter(d => d.state === state)
+    : DESTINATIONS;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="dest-placeholder">
+        <div class="placeholder-icon">🏜</div>
+        <div class="placeholder-title">Nenhum destino neste estado ainda</div>
+        <div class="placeholder-sub">em breve teremos mais recomendações</div>
+      </div>`;
+    countEl.innerHTML = '';
+    return;
+  }
+
+  grid.innerHTML = filtered.map((d, i) => renderCard(d, i)).join('');
+
+  const stateLabel = state
+    ? document.querySelector(`#stateSelect option[value="${state}"]`).text
+    : 'todos os estados';
+  countEl.innerHTML = `<strong>${filtered.length}</strong> destino${filtered.length !== 1 ? 's' : ''} · ${stateLabel}`;
+}
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('themeToggle').textContent = isLight ? '🌑' : '🌙';
+  localStorage.setItem('roleMoto_theme', isLight ? 'light' : 'dark');
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModalOutside(e, id) { if (e.target.id === id) closeModal(id); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  }
+});
+
+(function initTheme() {
+  if (localStorage.getItem('roleMoto_theme') === 'light') {
+    document.body.classList.add('light');
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.textContent = '🌑';
+  }
+})();
+
+filterDestinations();
+</script>

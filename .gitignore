@@ -1,0 +1,26 @@
+# ── Variáveis de ambiente ─────────────────────────────────────────────────────
+# NUNCA commitar — contém a chave da WeatherAPI
+.env
+
+# ── Dependências ──────────────────────────────────────────────────────────────
+node_modules/
+
+# ── Cache em disco (gerado em runtime) ───────────────────────────────────────
+cache/
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── Sistema operacional ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDEs / editores ───────────────────────────────────────────────────────────
+.vscode/
+.idea/
+
+# ── Claude Code (assistente de IA) ───────────────────────────────────────────
+.claude/
+PROGRESSO.md

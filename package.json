@@ -1,0 +1,21 @@
+{
+  "name": "rolemoto",
+  "version": "1.0.0",
+  "description": "Clima pra estrada · Café pra alma",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["weather", "moto", "travel", "brazil", "forecast"],
+  "author": "Ryan Oliveira <ryanoliveira.vm@gmail.com>",
+  "license": "ISC",
+  "type": "commonjs"
+}

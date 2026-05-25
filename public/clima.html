@@ -1,0 +1,1003 @@
+
+<style>
+  :root {
+    --espresso: #1A1008; --roast: #2C1A0E; --bark: #3D2410; --leather: #6B3D1E;
+    --caramel: #A0522D; --amber: #C8782A; --gold: #E8A030; --cream: #F5E6C8;
+    --fog: #D4C4A0; --smoke: #8A7860; --green-go: #6BCB77; --red-stop: #E05252;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--espresso); color: var(--cream); font-family: 'Outfit', sans-serif; }
+  .hero { background: var(--roast); border-bottom: 1px solid var(--bark); }
+  .hero-content { max-width: 1100px; margin: 0 auto; padding: 36px 24px 28px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .logo-area { display: flex; align-items: center; gap: 16px; }
+  .logo-icon { width: 52px; height: 52px; background: var(--amber); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .logo-main { font-family: 'Bebas Neue', cursive; font-size: 36px; letter-spacing: 3px; color: var(--cream); line-height: 1; }
+  .logo-main span { color: var(--gold); }
+  .logo-sub { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 4px; color: var(--smoke); margin-top: 2px; }
+  .hero-tagline { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 15px; color: var(--fog); opacity: 0.8; text-align: right; max-width: 220px; line-height: 1.5; }
+  .filter-strip { background: var(--roast); border-bottom: 1px solid var(--bark); position: sticky; top: 0; z-index: 50; }
+  .filter-inner { max-width: 1100px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .filter-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--smoke); text-transform: uppercase; flex-shrink: 0; }
+  .state-select { appearance: none; background: var(--bark); border: 1px solid var(--leather); border-radius: 6px; color: var(--cream); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500; padding: 10px 14px; outline: none; transition: border-color 0.2s; padding-right: 36px; min-width: 170px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A0522D' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+  .state-select:hover, .state-select:focus { border-color: var(--amber); }
+  .state-select option { background: var(--bark); color: var(--cream); }
+  .day-picker-wrap { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .day-btn { background: var(--bark); border: 1px solid var(--leather); border-radius: 6px; color: var(--fog); font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 7px 11px; cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; text-align: center; white-space: nowrap; line-height: 1.3; letter-spacing: 0.5px; }
+  .day-btn:hover { border-color: var(--caramel); color: var(--cream); }
+  .day-btn.active { background: var(--amber); border-color: var(--amber); color: var(--espresso); font-weight: 600; }
+  .day-btn .day-name { display: block; font-size: 10px; opacity: 0.75; }
+  .day-btn.active .day-name { opacity: 0.7; }
+  .search-btn { background: var(--amber); color: var(--espresso); border: none; border-radius: 6px; font-family: 'Bebas Neue', cursive; font-size: 16px; letter-spacing: 2px; padding: 10px 22px; cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap; flex-shrink: 0; }
+  .search-btn:hover { background: var(--gold); }
+  .search-btn:active { transform: scale(0.97); }
+  .date-context { max-width: 1100px; margin: 0 auto; padding: 10px 24px 0; display: none; align-items: center; gap: 10px; }
+  .date-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(200,120,42,0.15); border: 1px solid rgba(200,120,42,0.3); border-radius: 20px; padding: 5px 14px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--gold); letter-spacing: 1px; }
+  .forecast-note { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--smoke); letter-spacing: 1px; }
+  .main { max-width: 1100px; margin: 0 auto; padding: 24px 24px 60px; }
+  .api-help { background: var(--bark); border: 1px solid var(--leather); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 12px; color: var(--fog); line-height: 1.6; }
+  .api-help a { color: var(--amber); text-decoration: none; }
+  .api-help strong { color: var(--gold); font-family: 'IBM Plex Mono', monospace; }
+  .error-banner { background: rgba(224,82,82,0.1); border: 1px solid rgba(224,82,82,0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 12px; color: #f09595; font-family: 'IBM Plex Mono', monospace; display: none; }
+  .skipped-banner { background: rgba(200,120,42,0.08); border: 1px solid rgba(200,120,42,0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 11px; color: var(--smoke); font-family: 'IBM Plex Mono', monospace; display: none; line-height: 1.6; }
+  .skipped-banner strong { color: var(--amber); }
+  .winner-banner { background: var(--roast); border: 1px solid var(--amber); border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; display: none; align-items: center; gap: 20px; position: relative; overflow: hidden; }
+  .winner-banner::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--amber), var(--gold), var(--amber), transparent); }
+  .winner-crown { font-size: 36px; flex-shrink: 0; }
+  .winner-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 4px; color: var(--amber); text-transform: uppercase; margin-bottom: 4px; }
+  .winner-city { font-family: 'Bebas Neue', cursive; font-size: 32px; letter-spacing: 2px; color: var(--cream); line-height: 1; }
+  .winner-state { font-size: 13px; color: var(--smoke); margin-top: 2px; }
+  .winner-score-area { text-align: right; flex-shrink: 0; }
+  .winner-score-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--smoke); letter-spacing: 2px; text-transform: uppercase; }
+  .winner-score-value { font-family: 'Bebas Neue', cursive; font-size: 40px; color: var(--gold); line-height: 1; }
+  .winner-score-max { font-size: 14px; color: var(--smoke); }
+  .status-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .status-text { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--smoke); letter-spacing: 1px; }
+  .status-text strong { color: var(--gold); }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--smoke); font-family: 'IBM Plex Mono', monospace; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .cities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  .city-card { background: var(--roast); border: 1px solid var(--bark); border-radius: 12px; overflow: hidden; transition: transform 0.2s, border-color 0.2s; position: relative; animation: cardIn 0.4s ease both; }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .city-card:hover { transform: translateY(-3px); border-color: var(--leather); }
+  .city-card.rank-1 { border-color: var(--amber); }
+  .city-card.rank-2 { border-color: var(--caramel); }
+  .city-card.rank-3 { border-color: var(--leather); }
+  .card-header { padding: 14px 16px 10px; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--bark); }
+  .card-rank-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: 4px; flex-shrink: 0; letter-spacing: 1px; }
+  .rank-1 .card-rank-badge { background: rgba(200,120,42,0.2); color: var(--amber); }
+  .rank-2 .card-rank-badge { background: rgba(160,82,45,0.2); color: var(--caramel); }
+  .rank-3 .card-rank-badge { background: rgba(107,61,30,0.2); color: var(--leather); }
+  .card-city-name { font-family: 'Bebas Neue', cursive; font-size: 22px; letter-spacing: 1.5px; color: var(--cream); line-height: 1.1; flex: 1; }
+  .card-region { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--smoke); letter-spacing: 1px; margin-top: 2px; }
+  .card-body { padding: 14px 16px; }
+  .card-main-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .card-weather-icon { font-size: 40px; line-height: 1; }
+  .card-temp { text-align: right; }
+  .card-temp-value { font-family: 'Bebas Neue', cursive; font-size: 46px; color: var(--cream); line-height: 1; }
+  .card-temp-unit { font-size: 18px; color: var(--smoke); }
+  .card-condition { font-size: 12px; color: var(--fog); margin-top: -4px; text-align: right; }
+  .card-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-bottom: 12px; }
+  .metric-chip { background: var(--bark); border-radius: 6px; padding: 7px 8px; text-align: center; }
+  .metric-chip-label { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: var(--smoke); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+  .metric-chip-value { font-size: 13px; font-weight: 600; color: var(--cream); }
+  .metric-chip-value.good { color: var(--green-go); }
+  .metric-chip-value.warn { color: var(--gold); }
+  .metric-chip-value.bad  { color: var(--red-stop); }
+  .score-row { display: flex; align-items: center; gap: 10px; }
+  .score-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--smoke); letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
+  .score-bar-track { flex: 1; height: 4px; background: var(--bark); border-radius: 2px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--caramel), var(--amber), var(--gold)); transition: width 0.6s ease; }
+  .score-value { font-family: 'Bebas Neue', cursive; font-size: 16px; color: var(--gold); min-width: 28px; text-align: right; }
+  .best-time-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,160,48,0.1); border: 1px solid rgba(232,160,48,0.2); border-radius: 20px; padding: 4px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--gold); letter-spacing: 1px; margin-top: 9px; }
+  .best-time-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .fav-btn { position: absolute; top: 12px; right: 12px; background: transparent; border: none; cursor: pointer; font-size: 15px; opacity: 0.4; transition: opacity 0.2s, transform 0.2s; z-index: 2; padding: 4px; }
+  .fav-btn:hover { opacity: 0.8; transform: scale(1.2); }
+  .fav-btn.active { opacity: 1; }
+  .state-placeholder { grid-column: 1 / -1; text-align: center; padding: 60px 24px; }
+  .placeholder-icon { font-size: 52px; margin-bottom: 14px; opacity: 0.3; }
+  .placeholder-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--fog); margin-bottom: 8px; opacity: 0.6; }
+  .placeholder-sub { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--smoke); letter-spacing: 2px; opacity: 0.5; }
+  .loading-dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); animation: dotBounce 1.4s infinite ease-in-out; }
+  .loading-dot:nth-child(1) { animation-delay: 0s; }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotBounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+  /* ── Light theme ──────────────────────────────────── */
+  body.light {
+    --espresso: #F8F1E0; --roast: #EDE3C8; --bark: #DDD3B0; --leather: #C4AA80;
+    --caramel: #7A4820; --amber: #B06018; --gold: #906010; --cream: #1A1008;
+    --fog: #3A2410; --smoke: #6A5030; --green-go: #3A8844; --red-stop: #C03838;
+  }
+  .theme-btn { background: var(--bark); border: 1px solid var(--leather); border-radius: 6px; color: var(--fog); font-size: 16px; width: 38px; height: 38px; cursor: pointer; transition: background 0.15s, border-color 0.15s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .theme-btn:hover { border-color: var(--amber); background: var(--leather); }
+  /* ── Nav tabs ─────────────────────────────────────── */
+  .hero-nav { max-width: 1100px; margin: 0 auto; padding: 0 24px 14px; }
+  .app-nav { display: flex; gap: 4px; }
+  .nav-tab { display: inline-flex; align-items: center; gap: 7px; padding: 8px 18px; border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1px; text-decoration: none; background: var(--bark); border: 1px solid var(--leather); color: var(--fog); transition: border-color 0.15s, color 0.15s, background 0.15s; }
+  .nav-tab:hover { border-color: var(--amber); color: var(--cream); }
+  .nav-tab.active { background: var(--amber); border-color: var(--amber); color: var(--espresso); font-weight: 600; }
+  /* ── Section dividers ─────────────────────────────── */
+  .section-divider { display: flex; align-items: center; gap: 14px; margin: 36px 0 16px; }
+  .section-divider-line { flex: 1; height: 1px; background: var(--bark); }
+  .section-title-main { font-family: 'Bebas Neue', cursive; font-size: 20px; letter-spacing: 3px; color: var(--amber); white-space: nowrap; }
+  .section-sub-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--smoke); letter-spacing: 1px; white-space: nowrap; }
+  .tourist-section { display: none; }
+  .sunny-section { display: none; }
+  /* ── Hourly timeline ──────────────────────────────── */
+  .hourly-strip { display: flex; gap: 5px; margin-top: 10px; border-top: 1px solid var(--bark); padding-top: 10px; }
+  .hour-block { flex: 1; background: var(--bark); border-radius: 6px; padding: 6px 4px; text-align: center; }
+  .hour-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--smoke); letter-spacing: 0.3px; display: block; margin-bottom: 2px; }
+  .hour-emoji { font-size: 16px; display: block; line-height: 1.3; }
+  .hour-temp { font-size: 11px; font-weight: 600; color: var(--fog); display: block; margin-top: 1px; }
+  .sunny-list { display: flex; flex-direction: column; gap: 6px; }
+  .sunny-item { background: var(--roast); border: 1px solid var(--bark); border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; transition: border-color 0.2s; }
+  .sunny-item:hover { border-color: var(--leather); }
+  .sunny-item.top3 { border-color: var(--leather); }
+  .sunny-rank { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--smoke); min-width: 28px; flex-shrink: 0; }
+  .sunny-emoji-col { font-size: 22px; flex-shrink: 0; line-height: 1; }
+  .sunny-info { flex: 1; min-width: 0; }
+  .sunny-city-name { font-family: 'Bebas Neue', cursive; font-size: 17px; letter-spacing: 1px; color: var(--cream); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sunny-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--smoke); letter-spacing: 0.5px; }
+  .sunny-score-pill { background: var(--bark); border-radius: 6px; padding: 4px 10px; font-family: 'Bebas Neue', cursive; font-size: 18px; color: var(--gold); min-width: 44px; text-align: center; flex-shrink: 0; }
+  /* ── Footer ───────────────────────────────────────── */
+  .footer { background: var(--roast); border-top: 1px solid var(--bark); margin-top: 40px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; padding: 36px 24px 24px; }
+  .footer-top { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 28px; }
+  .footer-btn { background: var(--bark); border: 1px solid var(--leather); border-radius: 8px; color: var(--fog); font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1px; padding: 10px 20px; cursor: pointer; transition: border-color 0.2s, color 0.2s, background 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+  .footer-btn:hover { border-color: var(--amber); color: var(--cream); background: var(--leather); }
+  .footer-responsible { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--smoke); padding: 20px 0; border-top: 1px solid var(--bark); border-bottom: 1px solid var(--bark); line-height: 1.8; }
+  .footer-responsible strong { color: var(--fog); }
+  .footer-bottom { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; padding-top: 18px; }
+  .footer-legal-btn { background: none; border: none; color: var(--smoke); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.5px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 0; transition: color 0.2s; }
+  .footer-legal-btn:hover { color: var(--amber); }
+  .footer-copy { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--bark); }
+  /* ── Modais ────────────────────────────────────────── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box { background: var(--roast); border: 1px solid var(--leather); border-radius: 14px; max-width: 540px; width: 100%; max-height: 82vh; overflow-y: auto; position: relative; transform: translateY(20px); transition: transform 0.25s; }
+  .modal-overlay.open .modal-box { transform: translateY(0); }
+  .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--bark); display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 0; background: var(--roast); z-index: 1; }
+  .modal-title { font-family: 'Bebas Neue', cursive; font-size: 24px; letter-spacing: 2px; color: var(--cream); line-height: 1; }
+  .modal-close { background: var(--bark); border: 1px solid var(--leather); border-radius: 6px; color: var(--smoke); font-size: 14px; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: border-color 0.15s, color 0.15s; }
+  .modal-close:hover { border-color: var(--amber); color: var(--cream); }
+  .modal-body { padding: 22px 24px 28px; font-size: 13px; color: var(--fog); line-height: 1.75; }
+  .modal-body h4 { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--amber); text-transform: uppercase; margin: 18px 0 6px; }
+  .modal-body h4:first-child { margin-top: 0; }
+  .modal-body p { margin-bottom: 8px; }
+  .modal-body ul { padding-left: 18px; margin-bottom: 8px; }
+  .modal-body li { margin-bottom: 4px; }
+  .modal-badge-ok { display: inline-flex; align-items: center; gap: 7px; background: rgba(107,203,119,0.1); border: 1px solid rgba(107,203,119,0.3); border-radius: 20px; padding: 5px 14px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--green-go); letter-spacing: 1px; margin-bottom: 16px; }
+  @media (max-width: 600px) {
+    /* ── Header ── */
+    .hero-content { padding: 14px 16px 10px; flex-direction: column; align-items: flex-start; gap: 4px; }
+    .logo-icon { width: 42px; height: 42px; font-size: 20px; }
+    .logo-main { font-size: 28px; letter-spacing: 2px; }
+    .logo-sub { font-size: 9px; letter-spacing: 2px; }
+    .hero-tagline { display: none; }
+    .hero-nav { padding: 8px 16px 12px; }
+
+    /* ── Filter: flex-wrap para search + theme ficarem na mesma linha ── */
+    .filter-inner { padding: 10px 16px; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .filter-label { display: none; }
+    .state-select { flex: 1 1 100%; width: 100%; }
+    .day-picker-wrap {
+      flex: 1 1 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .day-picker-wrap::-webkit-scrollbar { display: none; }
+    .day-btn { padding: 9px 12px; min-width: 56px; }
+    .search-btn { flex: 1; }
+    .theme-btn { flex: 0 0 auto; }
+
+    /* ── Date context ── */
+    .date-context { padding: 10px 16px 0; }
+
+    /* ── Main ── */
+    .main { padding: 16px 12px 48px; }
+
+    /* ── Winner banner ── */
+    .winner-banner { padding: 14px 16px; gap: 12px; }
+    .winner-crown { font-size: 28px; }
+    .winner-city { font-size: 24px; }
+    .winner-score-value { font-size: 30px; }
+
+    /* ── Cards ── */
+    .cities-grid { grid-template-columns: 1fr; gap: 12px; }
+    .card-header { padding: 12px 14px 10px; }
+    .card-city-name { font-size: 20px; }
+    .card-body { padding: 12px 14px; }
+    .card-temp-value { font-size: 38px; }
+    .card-weather-icon { font-size: 34px; }
+    .metric-chip { padding: 8px 6px; }
+
+    /* ── Hourly strip ── */
+    .hour-block { padding: 7px 3px; }
+    .hour-emoji { font-size: 15px; }
+
+    /* ── Section dividers ── */
+    .section-divider { margin: 24px 0 14px; }
+    .section-sub-label { display: none; }
+    .section-title-main { font-size: 17px; letter-spacing: 2px; }
+
+    /* ── Sunny ranking ── */
+    .sunny-item { padding: 10px 12px; gap: 10px; }
+    .sunny-city-name { font-size: 15px; }
+    .sunny-meta { font-size: 9px; }
+
+    /* ── Footer ── */
+    .footer-inner { padding: 24px 16px 16px; }
+    .footer-top { flex-direction: column; align-items: stretch; gap: 8px; }
+    .footer-btn { justify-content: center; }
+    .footer-bottom { gap: 12px; }
+  }
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<header class="hero">
+  <div class="hero-content">
+    <div class="logo-area">
+      <div class="logo-icon">🏍</div>
+      <div>
+        <div class="logo-main">Rolê<span>Moto</span></div>
+        <div class="logo-sub">Clima pra estrada · Café pra alma</div>
+      </div>
+    </div>
+    <div class="hero-tagline">Escolha o destino certo.<br><em>O asfalto molhado não perdoa.</em></div>
+  </div>
+  <div class="hero-nav">
+    <nav class="app-nav">
+      <a href="/" class="nav-tab">🏠 Início</a>
+      <a href="/clima" class="nav-tab active">⚡ Clima</a>
+      <a href="/recomendados.html" class="nav-tab">📍 Recomendados</a>
+    </nav>
+  </div>
+</header>
+
+<div class="filter-strip">
+  <div class="filter-inner">
+    <span class="filter-label">Estado</span>
+    <select class="state-select" id="stateSelect">
+      <option value="">— Todos os estados —</option>
+      <option value="SP">São Paulo (SP)</option>
+      <option value="RJ">Rio de Janeiro (RJ)</option>
+      <option value="MG">Minas Gerais (MG)</option>
+      <option value="PR">Paraná (PR)</option>
+      <option value="RS">Rio Grande do Sul (RS)</option>
+      <option value="SC">Santa Catarina (SC)</option>
+      <option value="BA">Bahia (BA)</option>
+      <option value="GO">Goiás (GO)</option>
+      <option value="MT">Mato Grosso (MT)</option>
+      <option value="MS">Mato Grosso do Sul (MS)</option>
+      <option value="ES">Espírito Santo (ES)</option>
+      <option value="PE">Pernambuco (PE)</option>
+      <option value="CE">Ceará (CE)</option>
+      <option value="AM">Amazonas (AM)</option>
+      <option value="PA">Pará (PA)</option>
+    </select>
+    <span class="filter-label">Dia</span>
+    <div class="day-picker-wrap" id="dayPicker"></div>
+    <button class="search-btn" onclick="fetchWeather()">⚡ BUSCAR</button>
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" title="Alternar tema">🌙</button>
+  </div>
+</div>
+
+<div class="date-context" id="dateContext">
+  <div class="date-badge" id="dateBadge">📅 Hoje</div>
+  <div class="forecast-note" id="forecastNote"></div>
+</div>
+
+<main class="main">
+  <div class="api-help" id="apiHelp">
+    <strong>Como usar:</strong> Selecione estado e dia · Clique em Buscar. Somente cidades com nome confirmado pela API são exibidas.
+  </div>
+  <div class="error-banner" id="errorBanner"></div>
+  <div class="skipped-banner" id="skippedBanner"></div>
+
+  <div class="winner-banner" id="winnerBanner">
+    <div class="winner-crown">🏆</div>
+    <div style="flex:1">
+      <div class="winner-eyebrow">🥇 Melhor destino para rolê</div>
+      <div class="winner-city" id="winnerCity">—</div>
+      <div class="winner-state" id="winnerState"></div>
+    </div>
+    <div class="winner-score-area">
+      <div class="winner-score-label">Pontuação</div>
+      <div><span class="winner-score-value" id="winnerScore">0</span><span class="winner-score-max">/100</span></div>
+    </div>
+  </div>
+
+  <div class="status-bar" id="statusBar" style="display:none">
+    <div class="status-text" id="statusText">—</div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green-go)"></div>Ótimo</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Aceitável</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red-stop)"></div>Evitar</div>
+    </div>
+  </div>
+
+  <div class="tourist-section" id="touristSection">
+    <div class="section-divider" style="margin-top:0">
+      <div class="section-divider-line"></div>
+      <span class="section-title-main" id="touristSectionTitle">🏍 DESTINOS TURÍSTICOS</span>
+      <span class="section-sub-label" id="touristSectionSub">melhores condições para o rolê</span>
+      <div class="section-divider-line"></div>
+    </div>
+  </div>
+
+  <div class="cities-grid" id="citiesGrid">
+    <div class="state-placeholder">
+      <div class="placeholder-icon">🗺️</div>
+      <div class="placeholder-title">Escolha um estado e um dia</div>
+      <div class="placeholder-sub">selecione estado · escolha o dia · buscar</div>
+    </div>
+  </div>
+
+  <div class="sunny-section" id="sunnySection">
+    <div class="section-divider">
+      <div class="section-divider-line"></div>
+      <span class="section-title-main">☀️ TOP 20 MAIS ENSOLARADAS</span>
+      <span class="section-sub-label">ranking por clima · todas as cidades do estado</span>
+      <div class="section-divider-line"></div>
+    </div>
+    <div class="sunny-list" id="sunnyList"></div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <button class="footer-btn" onclick="openModal('modal-suporte')">🐛&nbsp; Suporte</button>
+      <button class="footer-btn" onclick="openModal('modal-seguranca')">🔒&nbsp; Segurança</button>
+      <button class="footer-btn" onclick="openModal('modal-docs')">📖&nbsp; Documentação</button>
+    </div>
+    <div class="footer-responsible">
+      Desenvolvido por <strong>Ryan Oliveira</strong><br>
+      <span style="font-size:10px;opacity:0.6">RolêMoto · Clima pra estrada · Café pra alma</span>
+    </div>
+    <div class="footer-bottom">
+      <button class="footer-legal-btn" onclick="openModal('modal-privacidade')">Política de Privacidade</button>
+      <span class="footer-copy">·</span>
+      <button class="footer-legal-btn" onclick="openModal('modal-avisos')">Avisos Legais</button>
+      <span class="footer-copy">·</span>
+      <span class="footer-copy">© 2025 RolêMoto</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Modal: Suporte -->
+<div class="modal-overlay" id="modal-suporte" onclick="closeModalOutside(event,'modal-suporte')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">🐛 Suporte</span>
+      <button class="modal-close" onclick="closeModal('modal-suporte')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>Encontrou um problema?</h4>
+      <p>Se você encontrou um bug, comportamento inesperado ou tem uma sugestão de melhoria, entre em contato. Quanto mais detalhes, mais rápido conseguimos resolver.</p>
+      <h4>Como reportar</h4>
+      <ul>
+        <li>Descreva o que aconteceu e o que era esperado</li>
+        <li>Informe o estado e o dia selecionados no momento do erro</li>
+        <li>Se possível, inclua uma captura de tela</li>
+        <li>Mencione o navegador utilizado (Chrome, Firefox, Safari…)</li>
+      </ul>
+      <h4>Contato</h4>
+      <p>📧 <strong>ryanoliveira.vm@gmail.com</strong></p>
+      <p style="font-size:11px;color:var(--smoke)">Respondemos em até 48 horas úteis.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Segurança -->
+<div class="modal-overlay" id="modal-seguranca" onclick="closeModalOutside(event,'modal-seguranca')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">🔒 Segurança</span>
+      <button class="modal-close" onclick="closeModal('modal-seguranca')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-badge-ok">✓ Site seguro · Sem coleta de dados pessoais</div>
+      <h4>Privacidade</h4>
+      <p>O RolêMoto <strong>não coleta, armazena nem processa nenhum dado pessoal</strong>. Não existe cadastro, login ou qualquer formulário que peça informações suas.</p>
+      <h4>Armazenamento local</h4>
+      <p>Apenas suas preferências de uso (cidades favoritas e tema visual) são salvas no <strong>localStorage</strong> do seu próprio navegador. Esses dados ficam exclusivamente no seu dispositivo e jamais são enviados a qualquer servidor.</p>
+      <h4>LGPD</h4>
+      <p>Em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018). Por não tratar dados pessoais identificáveis, este serviço está isento das obrigações de tratamento previstas na lei.</p>
+      <h4>Chave de API</h4>
+      <p>As consultas de clima são intermediadas por um servidor próprio. A chave da API fica protegida no servidor — nunca exposta no código do navegador.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Documentação -->
+<div class="modal-overlay" id="modal-docs" onclick="closeModalOutside(event,'modal-docs')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">📖 Documentação</span>
+      <button class="modal-close" onclick="closeModal('modal-docs')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>O que é o RolêMoto?</h4>
+      <p>É uma ferramenta que verifica o clima das principais cidades e destinos turísticos de cada estado brasileiro, e indica quais têm as melhores condições para um passeio de moto no dia escolhido.</p>
+      <h4>Como usar</h4>
+      <ul>
+        <li>Selecione o <strong>estado</strong> no menu superior</li>
+        <li>Escolha o <strong>dia</strong> (hoje ou até 7 dias à frente)</li>
+        <li>Clique em <strong>⚡ Buscar</strong></li>
+      </ul>
+      <h4>Rolê Score (0–100)</h4>
+      <p>Cada cidade recebe uma pontuação com base nas condições do dia:</p>
+      <ul>
+        <li>☀️ Céu aberto: <strong>+40 pts</strong></li>
+        <li>🌡️ Temperatura ideal (20–30°C): <strong>+30 pts</strong></li>
+        <li>🌧️ Sem chuva: <strong>+20 pts</strong></li>
+        <li>💨 Vento fraco (&lt;25 km/h): <strong>+10 pts</strong></li>
+        <li>⛈️ Chuva ou tempestade: <strong>pontos negativos</strong></li>
+      </ul>
+      <h4>Destinos Turísticos</h4>
+      <p>Exibe os principais destinos turísticos do estado com cards detalhados e previsão horária dividida em 4 períodos do dia.</p>
+      <h4>Top 20 Mais Ensolaradas</h4>
+      <p>Consulta uma lista mais ampla de cidades (incluindo cidades não-turísticas) e exibe as 20 com melhor Rolê Score no dia.</p>
+      <h4>Previsão horária nos cards</h4>
+      <p>Cada card mostra 4 blocos de horário — madrugada, manhã, tarde e noite — com o emoji do tempo predominante e a temperatura média do período.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Política de Privacidade -->
+<div class="modal-overlay" id="modal-privacidade" onclick="closeModalOutside(event,'modal-privacidade')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">📋 Política de Privacidade</span>
+      <button class="modal-close" onclick="closeModal('modal-privacidade')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>1. Dados coletados</h4>
+      <p>Este site não coleta nenhum dado pessoal identificável. As únicas informações armazenadas são preferências locais do usuário (favoritos e tema), salvas exclusivamente no dispositivo do usuário via localStorage.</p>
+      <h4>2. Uso de APIs externas</h4>
+      <p>As consultas de previsão do tempo são realizadas através da WeatherAPI.com. As requisições incluem apenas nomes de cidades e datas, sem qualquer dado pessoal.</p>
+      <h4>3. Cookies e rastreamento</h4>
+      <p>Este site não utiliza cookies, pixels de rastreamento nem qualquer tecnologia de monitoramento comportamental.</p>
+      <h4>4. Compartilhamento de dados</h4>
+      <p>Nenhum dado é compartilhado com terceiros, pois nenhum dado pessoal é coletado.</p>
+      <h4>5. LGPD</h4>
+      <p>Em conformidade com a Lei nº 13.709/2018 (LGPD). Serviço classificado como de baixo risco por não tratar dados pessoais.</p>
+      <h4>6. Contato</h4>
+      <p>Dúvidas: <strong>ryanoliveira.vm@gmail.com</strong></p>
+      <p style="font-size:10px;color:var(--smoke);margin-top:14px">Última atualização: Maio de 2025</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Avisos Legais -->
+<div class="modal-overlay" id="modal-avisos" onclick="closeModalOutside(event,'modal-avisos')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">⚖️ Avisos Legais</span>
+      <button class="modal-close" onclick="closeModal('modal-avisos')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>Precisão das informações</h4>
+      <p>As previsões climáticas são fornecidas pela WeatherAPI.com e têm caráter exclusivamente informativo. O RolêMoto não se responsabiliza por imprecisões nas previsões nem por decisões tomadas com base nelas.</p>
+      <h4>Uso por conta e risco</h4>
+      <p>A decisão de realizar ou não um passeio de moto é de <strong>exclusiva responsabilidade do usuário</strong>. Sempre verifique as condições climáticas e de estrada antes de sair. Dirija com segurança.</p>
+      <h4>Propriedade intelectual</h4>
+      <p>O código-fonte, design e conteúdo deste site são propriedade de Ryan Oliveira. Reprodução não autorizada é proibida.</p>
+      <h4>Isenção de responsabilidade</h4>
+      <p>O RolêMoto é uma ferramenta de auxílio à decisão e não substitui o julgamento do piloto. Condições climáticas podem mudar rapidamente e sem aviso.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const TOURIST_CITIES_BY_STATE = {
+  SP: ["Santos","Ubatuba","Campos do Jordão","Ilhabela","Brotas","Atibaia","Itu","Holambra","Barra Bonita","São Paulo","Campinas","Piracicaba"],
+  RJ: ["Rio de Janeiro","Armação dos Búzios","Paraty","Cabo Frio","Angra dos Reis","Petrópolis","Teresópolis","Niterói","Nova Friburgo","Arraial do Cabo"],
+  MG: ["Ouro Preto","Tiradentes","Diamantina","São João del-Rei","Mariana","Poços de Caldas","Brumadinho","São Thomé das Letras","Caxambu","Serro","Belo Horizonte","Lavras"],
+  PR: ["Curitiba","Foz do Iguaçu","Morretes","Antonina","Guaratuba","Paranaguá","Matinhos","Ponta Grossa","Londrina","Maringá"],
+  RS: ["Gramado","Canela","Bento Gonçalves","Garibaldi","Torres","Cambará do Sul","Nova Petrópolis","Porto Alegre","Caxias do Sul","Antônio Prado"],
+  SC: ["Florianópolis","Balneário Camboriú","Bombinhas","Blumenau","Joinville","Urubici","São Joaquim","Pomerode","Treze Tílias"],
+  BA: ["Salvador","Porto Seguro","Ilhéus","Lençóis","Cairu","Mata de São João","Itacaré","Valença","Camaçari"],
+  GO: ["Pirenópolis","Caldas Novas","Alto Paraíso de Goiás","Goiás","Goiânia","Anápolis","Cavalcante"],
+  MT: ["Chapada dos Guimarães","Nobres","Alta Floresta","Cuiabá","Cáceres","Barra do Garças"],
+  MS: ["Bonito","Corumbá","Aquidauana","Miranda","Jardim","Campo Grande","Bodoquena"],
+  ES: ["Guarapari","Domingos Martins","Anchieta","Itaúnas","Vitória","Santa Teresa"],
+  PE: ["Olinda","Ipojuca","Caruaru","Gravatá","Triunfo","Recife","Petrolina","Bezerros","Fernando de Noronha"],
+  CE: ["Fortaleza","Jericoacoara","Aracati","Beberibe","Camocim","Quixadá","Guaramiranga","Juazeiro do Norte"],
+  AM: ["Manaus","Parintins","Presidente Figueiredo","Barcelos","Iranduba","Tefé"],
+  PA: ["Belém","Santarém","Salinópolis","Soure","Bragança","Monte Alegre"],
+};
+
+const EXTRA_CITIES_BY_STATE = {
+  SP: ["Ribeirão Preto","Sorocaba","São José dos Campos","Bauru","Marília","Presidente Prudente","Araçatuba","São Carlos","Araraquara","Franca","Barretos","Assis","Botucatu","Jundiaí","Americana","Limeira","Taubaté","Bragança Paulista"],
+  RJ: ["Volta Redonda","Barra Mansa","Campos dos Goytacazes","Macaé","São Pedro da Aldeia","Saquarema","Maricá","Itaboraí","Resende","Nova Iguaçu"],
+  MG: ["Uberlândia","Juiz de Fora","Contagem","Governador Valadares","Montes Claros","Uberaba","Passos","Pouso Alegre","Varginha","Itajubá","Ipatinga","Sete Lagoas","Conselheiro Lafaiete","Camanducaia","Patos de Minas","Congonhas","Sabará","João Monlevade"],
+  PR: ["Castro","Palmeira","Lapa","São José dos Pinhais","Araucária","Colombo","Cascavel","Campo Mourão","Apucarana","Toledo","Guarapuava","Irati"],
+  RS: ["Pelotas","Santa Maria","Novo Hamburgo","São Leopoldo","Passo Fundo","Uruguaiana","Bagé","Rio Grande","Cachoeira do Sul","Lajeado","Santa Cruz do Sul","Vacaria","Veranópolis","Farroupilha"],
+  SC: ["Criciúma","Itajaí","Jaraguá do Sul","Lages","Chapecó","Palhoça","São José","Navegantes","Concórdia","Tubarão","Araranguá","Indaial","Gaspar","Mafra"],
+  BA: ["Feira de Santana","Vitória da Conquista","Itabuna","Juazeiro","Lauro de Freitas","Barreiras","Jequié","Paulo Afonso","Teixeira de Freitas","Alagoinhas","Simões Filho","Jacobina","Santo Antônio de Jesus","Seabra","Bom Jesus da Lapa"],
+  GO: ["Aparecida de Goiânia","Rio Verde","Luziânia","Valparaíso de Goiás","Trindade","Formosa","Itumbiara","Senador Canedo","Catalão","Jataí"],
+  MT: ["Várzea Grande","Rondonópolis","Sinop","Sorriso","Lucas do Rio Verde","Primavera do Leste","Tangará da Serra"],
+  MS: ["Dourados","Três Lagoas","Ponta Porã","Naviraí","Nova Andradina","Sidrolândia","Maracaju","Coxim"],
+  ES: ["Vila Velha","Serra","Cariacica","Linhares","Cachoeiro de Itapemirim","São Mateus","Colatina","Aracruz"],
+  PE: ["Paulista","Garanhuns","Vitória de Santo Antão","Cabo de Santo Agostinho","Santa Cruz do Capibaribe","Camaragibe","Jaboatão dos Guararapes","Serra Talhada","Arcoverde","Limoeiro","Ouricuri"],
+  CE: ["Caucaia","Maracanaú","Sobral","Itapipoca","Maranguape","Iguatu","Russas","Tianguá","Ubajara","Aquiraz","Crato","Brejo Santo"],
+  AM: ["Itacoatiara","Manacapuru","Coari","Tabatinga","Maués","São Gabriel da Cachoeira","Humaitá","Autazes"],
+  PA: ["Ananindeua","Marabá","Parauapebas","Castanhal","Abaetetuba","Altamira","Cametá","Itaituba","Tomé-Açu","Viseu"],
+};
+
+const ALL_CITIES_BY_STATE = Object.fromEntries(
+  Object.keys(TOURIST_CITIES_BY_STATE).map(s => [
+    s, [...TOURIST_CITIES_BY_STATE[s], ...(EXTRA_CITIES_BY_STATE[s] || [])]
+  ])
+);
+
+const STATE_NAMES = {
+  SP: "São Paulo", RJ: "Rio de Janeiro", MG: "Minas Gerais", PR: "Paraná",
+  RS: "Rio Grande do Sul", SC: "Santa Catarina", BA: "Bahia", GO: "Goiás",
+  MT: "Mato Grosso", MS: "Mato Grosso do Sul", ES: "Espírito Santo",
+  PE: "Pernambuco", CE: "Ceará", AM: "Amazonas", PA: "Pará",
+};
+
+// Margem de 2° em todos os lados para absorver imprecisões do geocoding da API
+const STATE_BOUNDS = {
+  SP: { latMin: -27.3, latMax: -17.8, lonMin: -55.1, lonMax: -42.2 },
+  RJ: { latMin: -25.4, latMax: -18.8, lonMin: -46.9, lonMax: -38.9 },
+  MG: { latMin: -24.9, latMax: -12.2, lonMin: -53.1, lonMax: -37.9 },
+  PR: { latMin: -28.7, latMax: -20.5, lonMin: -56.6, lonMax: -46.0 },
+  RS: { latMin: -35.8, latMax: -25.1, lonMin: -59.7, lonMax: -47.7 },
+  SC: { latMin: -31.4, latMax: -23.9, lonMin: -55.9, lonMax: -46.0 },
+  BA: { latMin: -20.4, latMax:  -6.5, lonMin: -48.6, lonMax: -35.3 },
+  GO: { latMin: -21.0, latMax: -10.4, lonMin: -55.3, lonMax: -43.9 },
+  MT: { latMin: -20.0, latMax:  -5.3, lonMin: -63.0, lonMax: -48.2 },
+  MS: { latMin: -26.0, latMax: -15.2, lonMin: -60.1, lonMax: -49.0 },
+  ES: { latMin: -23.3, latMax: -15.9, lonMin: -43.9, lonMax: -37.5 },
+  PE: { latMin: -11.5, latMax:  -5.3, lonMin: -43.4, lonMax: -32.8 },
+  CE: { latMin:  -9.9, latMax:  -0.8, lonMin: -43.4, lonMax: -35.2 },
+  AM: { latMin: -11.8, latMax:   4.2, lonMin: -75.8, lonMax: -54.1 },
+  PA: { latMin: -11.8, latMax:   4.5, lonMin: -60.5, lonMax: -44.0 },
+};
+
+function isWithinState(lat, lon, stateCode) {
+  const b = STATE_BOUNDS[stateCode];
+  if (!b) return true;
+  return lat >= b.latMin && lat <= b.latMax && lon >= b.lonMin && lon <= b.lonMax;
+}
+
+const PT_WEEKDAYS = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const PT_WEEKDAYS_FULL = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+const PT_MONTHS_SHORT = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const PT_MONTHS_FULL = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+
+let selectedDayOffset = 0;
+const favorites = new Set(JSON.parse(localStorage.getItem('roleMoto_favs') || '[]'));
+function saveFavs() { try { localStorage.setItem('roleMoto_favs', JSON.stringify([...favorites])); } catch(e) {} }
+
+function buildDayPicker() {
+  const wrap = document.getElementById('dayPicker');
+  wrap.innerHTML = '';
+  const now = new Date();
+  for (let i = 0; i <= 7; i++) {
+    const d = new Date(now);
+    d.setDate(now.getDate() + i);
+    const btn = document.createElement('button');
+    btn.className = 'day-btn' + (i === 0 ? ' active' : '');
+    btn.dataset.offset = i;
+    const label = i === 0 ? 'Hoje' : i === 1 ? 'Amanhã' : PT_WEEKDAYS[d.getDay()];
+    const dateStr = `${d.getDate()} ${PT_MONTHS_SHORT[d.getMonth()]}`;
+    btn.innerHTML = `${label}<span class="day-name">${dateStr}</span>`;
+    btn.onclick = () => selectDay(i);
+    wrap.appendChild(btn);
+  }
+}
+
+function selectDay(offset) {
+  selectedDayOffset = offset;
+  document.querySelectorAll('.day-btn').forEach(b => b.classList.toggle('active', Number(b.dataset.offset) === offset));
+}
+
+function getSelectedDate() {
+  const d = new Date();
+  d.setDate(d.getDate() + selectedDayOffset);
+  return d;
+}
+
+function formatSelectedDate() {
+  const d = getSelectedDate();
+  return `${PT_WEEKDAYS_FULL[d.getDay()]}, ${d.getDate()} de ${PT_MONTHS_FULL[d.getMonth()]}`;
+}
+
+function scoreFromForecast(day) {
+  let score = 0;
+  const temp = (day.maxtemp_c + day.mintemp_c) / 2;
+  const rain = day.totalprecip_mm;
+  const wind = day.maxwind_kph;
+  const code = day.condition.code;
+  if (code === 1000) score += 40;
+  else if ([1003,1006].includes(code)) score += 30;
+  else if ([1009,1030].includes(code)) score += 15;
+  else if ([1063,1150,1153,1168,1171,1180,1183,1186,1189,1192,1195,1198,1201,1240,1243,1246].includes(code)) score -= 20;
+  else if ([1087,1273,1276,1279,1282].includes(code)) score -= 50;
+  if (temp >= 20 && temp <= 30) score += 30;
+  else if (temp >= 16 && temp < 20) score += 20;
+  else if (temp > 30 && temp <= 35) score += 15;
+  else score += 5;
+  if (rain === 0) score += 20;
+  else if (rain < 2) score += 10;
+  else if (rain < 8) score -= 10;
+  else score -= 25;
+  if (wind <= 25) score += 10;
+  else if (wind <= 40) score += 4;
+  else score -= 10;
+  return Math.max(0, Math.min(100, score));
+}
+
+function scoreFromCurrent(data) {
+  let score = 0;
+  const temp = data.current.temp_c;
+  const rain = data.current.precip_mm;
+  const wind = data.current.wind_kph;
+  const code = data.current.condition.code;
+  if (code === 1000) score += 40;
+  else if ([1003,1006].includes(code)) score += 30;
+  else if ([1009,1030].includes(code)) score += 15;
+  else if ([1063,1150,1153,1168,1171,1180,1183,1186,1189,1192,1195].includes(code)) score -= 20;
+  else if ([1087,1273,1276,1279,1282].includes(code)) score -= 50;
+  if (temp >= 20 && temp <= 30) score += 30;
+  else if (temp >= 16 && temp < 20) score += 20;
+  else if (temp > 30 && temp <= 35) score += 15;
+  else score += 5;
+  if (rain === 0) score += 20;
+  else if (rain < 2) score += 10;
+  else if (rain < 8) score -= 10;
+  else score -= 25;
+  if (wind <= 25) score += 10;
+  else if (wind <= 40) score += 4;
+  else score -= 10;
+  return Math.max(0, Math.min(100, score));
+}
+
+function getWeatherEmoji(code) {
+  if (code === 1000) return "☀️";
+  if (code === 1003) return "🌤️";
+  if (code === 1006) return "⛅";
+  if (code === 1009) return "☁️";
+  if ([1030,1135,1147].includes(code)) return "🌫️";
+  if ([1063,1150,1153].includes(code)) return "🌦️";
+  if ([1180,1183,1186,1189,1192,1195].includes(code)) return "🌧️";
+  if ([1087,1273,1276,1279,1282].includes(code)) return "⛈️";
+  if ([1066,1114,1117].includes(code)) return "❄️";
+  return "🌡️";
+}
+
+function buildHourBlocks(hours) {
+  const ranges = [
+    { label: '00-06h', from: 0, to: 6 },
+    { label: '06-12h', from: 6, to: 12 },
+    { label: '12-18h', from: 12, to: 18 },
+    { label: '18-00h', from: 18, to: 24 },
+  ];
+  return ranges.map(range => {
+    const slice = hours.filter(h => {
+      const hr = parseInt(h.time.split(' ')[1], 10);
+      return hr >= range.from && hr < range.to;
+    });
+    if (!slice.length) return null;
+    const worst = slice.reduce((a, b) => b.precip_mm > a.precip_mm ? b : a);
+    const rep = worst.precip_mm >= 0.1 ? worst : slice[Math.floor(slice.length / 2)];
+    const avgTemp = Math.round(slice.reduce((s, h) => s + h.temp_c, 0) / slice.length);
+    return { label: range.label, emoji: getWeatherEmoji(rep.condition.code), temp: avgTemp };
+  }).filter(Boolean);
+}
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('themeToggle').textContent = isLight ? '🌑' : '🌙';
+  try { localStorage.setItem('roleMoto_theme', isLight ? 'light' : 'dark'); } catch(e) {}
+}
+
+function renderSunnyItem(r, rank) {
+  const tempStr = r.isForecast
+    ? `máx ${Math.round(r.tempMax)}° · mín ${Math.round(r.tempMin)}°`
+    : `${Math.round(r.tempMain)}°C`;
+  return `
+    <div class="sunny-item ${rank <= 3 ? 'top3' : ''}">
+      <span class="sunny-rank">#${rank}</span>
+      <span class="sunny-emoji-col">${r.emoji}</span>
+      <div class="sunny-info">
+        <span class="sunny-city-name">${r.city}</span>
+        <span class="sunny-meta">${tempStr} · ${r.rain.toFixed(1)}mm chuva · ${Math.round(r.wind)}km/h vento</span>
+      </div>
+      <div class="sunny-score-pill">${r.score}</div>
+    </div>`;
+}
+
+function renderCard(r, rank, idx) {
+  const isFav = favorites.has(r.city);
+  const rankClass = rank <= 3 ? `rank-${rank}` : '';
+  const rankLabel = rank === 1 ? '🥇 #1' : rank === 2 ? '🥈 #2' : rank === 3 ? '🥉 #3' : `#${rank}`;
+  const windColor = r.wind <= 25 ? 'good' : r.wind <= 45 ? 'warn' : 'bad';
+  const rainColor = r.rain === 0 ? 'good' : r.rain < 3 ? 'warn' : 'bad';
+  const humColor = r.humidity < 70 ? 'good' : r.humidity < 85 ? 'warn' : 'bad';
+  const tempDisplay = r.isForecast
+    ? `<div style="text-align:right"><span class="card-temp-value">${Math.round(r.tempMax)}</span><span class="card-temp-unit">°C</span><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--smoke);margin-top:-2px">mín ${Math.round(r.tempMin)}°</div></div>`
+    : `<div><span class="card-temp-value">${Math.round(r.tempMain)}</span><span class="card-temp-unit">°C</span></div>`;
+  return `
+    <div class="city-card ${rankClass}" style="animation-delay:${idx*55}ms">
+      <button class="fav-btn ${isFav?'active':''}" onclick="toggleFav('${r.city.replace(/'/g,"\\'")}',this)" title="${isFav?'Remover':'Favoritar'}">${isFav?'❤️':'🤍'}</button>
+      <div class="card-header">
+        <div>
+          <div class="card-city-name">${r.city}</div>
+          ${r.stateTag ? `<div class="card-region">${STATE_NAMES[r.stateTag] || r.stateTag}</div>` : ''}
+        </div>
+        <span class="card-rank-badge">${rankLabel}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-main-row">
+          <div class="card-weather-icon">${r.emoji}</div>
+          <div class="card-temp">${tempDisplay}<div class="card-condition">${r.conditionText}</div></div>
+        </div>
+        <div class="card-metrics">
+          <div class="metric-chip"><div class="metric-chip-label">Chuva</div><div class="metric-chip-value ${rainColor}">${r.rain.toFixed(1)}mm</div></div>
+          <div class="metric-chip"><div class="metric-chip-label">Vento</div><div class="metric-chip-value ${windColor}">${Math.round(r.wind)}km/h</div></div>
+          <div class="metric-chip"><div class="metric-chip-label">Umidade</div><div class="metric-chip-value ${humColor}">${r.humidity}%</div></div>
+        </div>
+        <div class="score-row">
+          <span class="score-label">ROLÊ SCORE</span>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:${r.score}%"></div></div>
+          <span class="score-value">${r.score}</span>
+        </div>
+        ${r.score >= 70 ? '<div class="best-time-tag"><div class="best-time-dot"></div>Bom dia para rodar!</div>' : ''}
+        ${r.hourBlocks && r.hourBlocks.length ? `<div class="hourly-strip">${r.hourBlocks.map(b=>`<div class="hour-block"><span class="hour-label">${b.label}</span><span class="hour-emoji">${b.emoji}</span><span class="hour-temp">${b.temp}°</span></div>`).join('')}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorBanner');
+  el.textContent = '⚠️ ' + msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 8000);
+}
+
+function toggleFav(city, btn) {
+  if (favorites.has(city)) { favorites.delete(city); btn.textContent = '🤍'; btn.classList.remove('active'); }
+  else { favorites.add(city); btn.textContent = '❤️'; btn.classList.add('active'); }
+  saveFavs();
+}
+
+async function fetchAllStatesOverview() {
+  const grid = document.getElementById('citiesGrid');
+
+  document.getElementById('apiHelp').style.display = 'none';
+  document.getElementById('winnerBanner').style.display = 'none';
+  document.getElementById('statusBar').style.display = 'none';
+  document.getElementById('skippedBanner').style.display = 'none';
+  document.getElementById('sunnySection').style.display = 'none';
+  document.getElementById('touristSection').style.display = 'none';
+
+  const dateCtx = document.getElementById('dateContext');
+  dateCtx.style.display = 'flex';
+  document.getElementById('dateBadge').textContent = `📅 ${formatSelectedDate()}`;
+  document.getElementById('forecastNote').textContent = selectedDayOffset === 0
+    ? 'Panorama nacional · melhor cidade por estado'
+    : `Previsão para daqui ${selectedDayOffset} dia${selectedDayOffset > 1 ? 's' : ''}`;
+
+  const totalCities = Object.values(TOURIST_CITIES_BY_STATE).reduce((s, a) => s + a.length, 0);
+  grid.innerHTML = `<div class="state-placeholder"><div class="placeholder-icon">🗺️</div><div class="placeholder-title">Verificando o céu em todo o Brasil...</div><div class="placeholder-sub">${totalCities} cidades turísticas · 15 estados</div><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div></div>`;
+
+  const cityPairs = Object.entries(TOURIST_CITIES_BY_STATE).flatMap(
+    ([state, cities]) => cities.map(city => ({ city, state }))
+  );
+
+  const results = [];
+  await Promise.allSettled(cityPairs.map(async ({ city, state }) => {
+    const url = `/api/weather/forecast?q=${encodeURIComponent(city + ', ' + STATE_NAMES[state] + ', Brazil')}&days=${selectedDayOffset + 1}`;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return;
+      const data = await res.json();
+      const country = (data.location.country || '').toLowerCase();
+      if (!country.includes('brazil') && !country.includes('brasil')) return;
+      if (!isWithinState(data.location.lat, data.location.lon, state)) return;
+      const dayData = data.forecast.forecastday[selectedDayOffset];
+      if (!dayData) return;
+      results.push({
+        city, stateTag: state, region: data.location.region,
+        score: scoreFromForecast(dayData.day),
+        emoji: getWeatherEmoji(dayData.day.condition.code),
+        conditionText: dayData.day.condition.text,
+        tempMain: (dayData.day.maxtemp_c + dayData.day.mintemp_c) / 2,
+        tempMin: dayData.day.mintemp_c, tempMax: dayData.day.maxtemp_c,
+        rain: dayData.day.totalprecip_mm, wind: dayData.day.maxwind_kph,
+        humidity: dayData.day.avghumidity, isForecast: true,
+        hourBlocks: buildHourBlocks(dayData.hour || [])
+      });
+    } catch(e) {}
+  }));
+
+  const tipHTML = `<div class="state-placeholder" style="padding:20px 24px 16px;opacity:0.6"><div class="placeholder-icon" style="font-size:36px;margin-bottom:8px;opacity:1">🗺️</div><div class="placeholder-title" style="font-size:16px">Escolha um estado e um dia</div><div class="placeholder-sub">selecione estado · escolha o dia · buscar</div></div>`;
+
+  if (results.length === 0) {
+    grid.innerHTML = tipHTML + `<div class="state-placeholder"><div class="placeholder-icon">🔑</div><div class="placeholder-title">Servidor não encontrado</div><div class="placeholder-sub">execute npm start para iniciar o servidor</div></div>`;
+    return;
+  }
+
+  const bestByState = {};
+  for (const r of results) {
+    if (!bestByState[r.stateTag] || r.score > bestByState[r.stateTag].score) bestByState[r.stateTag] = r;
+  }
+  const champions = Object.values(bestByState).sort((a, b) => b.score - a.score);
+
+  const best = champions[0];
+  document.getElementById('winnerCity').textContent = best.city;
+  document.getElementById('winnerState').textContent = `${STATE_NAMES[best.stateTag]} · ${best.conditionText} · máx ${Math.round(best.tempMax)}°C`;
+  document.getElementById('winnerScore').textContent = best.score;
+  document.getElementById('winnerBanner').style.display = 'flex';
+
+  const good = champions.filter(r => r.score >= 70).length;
+  const ok   = champions.filter(r => r.score >= 45 && r.score < 70).length;
+  const bad  = champions.filter(r => r.score < 45).length;
+  document.getElementById('statusText').innerHTML = `<strong>${champions.length} estados verificados</strong> · top 1 por estado — <strong style="color:var(--green-go)">${good} ótimas</strong> · <strong style="color:var(--gold)">${ok} ok</strong> · <strong style="color:var(--red-stop)">${bad} ruins</strong>`;
+  document.getElementById('statusBar').style.display = 'flex';
+
+  document.getElementById('touristSectionTitle').textContent = '🗺️ PANORAMA NACIONAL';
+  document.getElementById('touristSectionSub').textContent = 'top 1 cidade com mais sol por estado';
+  document.getElementById('touristSection').style.display = 'block';
+
+  grid.innerHTML = tipHTML + champions.map((r, i) => renderCard(r, i + 1, i)).join('');
+}
+
+async function fetchWeather() {
+  const stateCode = document.getElementById('stateSelect').value;
+  const grid = document.getElementById('citiesGrid');
+  if (!stateCode) { await fetchAllStatesOverview(); return; }
+
+  const touristCities = TOURIST_CITIES_BY_STATE[stateCode] || [];
+  const allCities = ALL_CITIES_BY_STATE[stateCode] || [];
+
+  document.getElementById('apiHelp').style.display = 'none';
+  document.getElementById('winnerBanner').style.display = 'none';
+  document.getElementById('statusBar').style.display = 'none';
+  document.getElementById('skippedBanner').style.display = 'none';
+  document.getElementById('sunnySection').style.display = 'none';
+  document.getElementById('touristSection').style.display = 'none';
+  document.getElementById('touristSectionTitle').textContent = '🏍 DESTINOS TURÍSTICOS';
+  document.getElementById('touristSectionSub').textContent = 'melhores condições para o rolê';
+
+  const dateCtx = document.getElementById('dateContext');
+  dateCtx.style.display = 'flex';
+  document.getElementById('dateBadge').textContent = `📅 ${formatSelectedDate()}`;
+  document.getElementById('forecastNote').textContent = selectedDayOffset === 0
+    ? 'Previsão do dia · dados horários'
+    : `Previsão para daqui ${selectedDayOffset} dia${selectedDayOffset>1?'s':''}`;
+
+  grid.innerHTML = `<div class="state-placeholder"><div class="placeholder-icon">🏍️</div><div class="placeholder-title">Verificando o céu em ${stateCode}...</div><div class="placeholder-sub">${allCities.length} cidades · buscando previsão horária</div><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div></div>`;
+
+  const results = [];
+  const skipped = [];
+
+  const stateName = STATE_NAMES[stateCode] || stateCode;
+  const endpoint = city => `/api/weather/forecast?q=${encodeURIComponent(city+', '+stateName+', Brazil')}&days=${selectedDayOffset+1}`;
+
+  await Promise.allSettled(allCities.map(async city => {
+    try {
+      const res = await fetch(endpoint(city));
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      const apiRegion = data.location.region;
+      const apiCountry = (data.location.country || '').toLowerCase();
+      const apiLat = data.location.lat;
+      const apiLon = data.location.lon;
+
+      if (!apiCountry.includes('brazil') && !apiCountry.includes('brasil')) {
+        skipped.push({ city, reason: `fora do Brasil (${data.location.country})` });
+        return;
+      }
+
+      if (!isWithinState(apiLat, apiLon, stateCode)) {
+        skipped.push({ city, reason: `coordenadas fora do estado (${apiLat.toFixed(1)}, ${apiLon.toFixed(1)})` });
+        return;
+      }
+
+      const dayData = data.forecast.forecastday[selectedDayOffset];
+      if (!dayData) return;
+      const hourBlocks = buildHourBlocks(dayData.hour || []);
+      results.push({
+        city, score: scoreFromForecast(dayData.day),
+        emoji: getWeatherEmoji(dayData.day.condition.code),
+        conditionText: dayData.day.condition.text,
+        tempMain: (dayData.day.maxtemp_c + dayData.day.mintemp_c) / 2,
+        tempMin: dayData.day.mintemp_c, tempMax: dayData.day.maxtemp_c,
+        rain: dayData.day.totalprecip_mm, wind: dayData.day.maxwind_kph,
+        humidity: dayData.day.avghumidity, region: apiRegion, isForecast: true,
+        hourBlocks
+      });
+    } catch(e) {}
+  }));
+
+  if (results.length === 0) {
+    const msg = skipped.length > 0
+      ? 'Nenhuma cidade válida encontrada. A API retornou localizações diferentes das esperadas.'
+      : 'Não foi possível obter dados. Verifique a configuração do servidor.';
+    showError(msg);
+    grid.innerHTML = `<div class="state-placeholder"><div class="placeholder-icon">🔑</div><div class="placeholder-title">Nenhuma cidade válida encontrada</div><div class="placeholder-sub">verifique sua chave em weatherapi.com</div></div>`;
+    return;
+  }
+
+  // Aviso de cidades ignoradas
+  if (skipped.length > 0) {
+    const banner = document.getElementById('skippedBanner');
+    const names = skipped.map(s => `${s.city} (${s.reason})`).join(' · ');
+    banner.innerHTML = `<strong>${skipped.length} cidade${skipped.length>1?'s':''} ignorada${skipped.length>1?'s':''}</strong> por geocoding fora do estado: ${names}`;
+    banner.style.display = 'block';
+  }
+
+  results.sort((a, b) => b.score - a.score);
+
+  const touristResults = results.filter(r => touristCities.includes(r.city));
+  touristResults.sort((a, b) => b.score - a.score);
+  const sunnyTop20 = results.slice(0, 20);
+
+  const displayResults = touristResults.length > 0 ? touristResults : results;
+  const best = displayResults[0];
+  document.getElementById('winnerCity').textContent = best.city;
+  document.getElementById('winnerState').textContent = `${best.region} · ${best.conditionText} · ${best.isForecast ? 'máx '+Math.round(best.tempMax)+'°C' : Math.round(best.tempMain)+'°C'}`;
+  document.getElementById('winnerScore').textContent = best.score;
+  document.getElementById('winnerBanner').style.display = 'flex';
+
+  const good = displayResults.filter(r => r.score >= 70).length;
+  const ok   = displayResults.filter(r => r.score >= 45 && r.score < 70).length;
+  const bad  = displayResults.filter(r => r.score < 45).length;
+  document.getElementById('statusText').innerHTML = `<strong>${displayResults.length} destinos turísticos</strong> em ${stateCode} — <strong style="color:var(--green-go)">${good} ótimas</strong> · <strong style="color:var(--gold)">${ok} ok</strong> · <strong style="color:var(--red-stop)">${bad} ruins</strong>`;
+  document.getElementById('statusBar').style.display = 'flex';
+
+  if (displayResults.length > 0) document.getElementById('touristSection').style.display = 'block';
+  grid.innerHTML = displayResults.map((r, i) => renderCard(r, i+1, i)).join('');
+
+  if (sunnyTop20.length > 0) {
+    document.getElementById('sunnyList').innerHTML = sunnyTop20.map((r, i) => renderSunnyItem(r, i+1)).join('');
+    document.getElementById('sunnySection').style.display = 'block';
+  }
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeModalOutside(e, id) {
+  if (e.target === document.getElementById(id)) closeModal(id);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => {
+      m.classList.remove('open');
+    });
+    document.body.style.overflow = '';
+  }
+  if (e.key === 'Enter') fetchWeather();
+});
+buildDayPicker();
+fetchAllStatesOverview();
+(function initTheme() {
+  try {
+    if (localStorage.getItem('roleMoto_theme') === 'light') {
+      document.body.classList.add('light');
+      document.getElementById('themeToggle').textContent = '🌑';
+    }
+  } catch(e) {}
+})();
+</script>

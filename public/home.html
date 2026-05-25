@@ -1,0 +1,805 @@
+
+<style>
+  :root {
+    --espresso:#1A1008;--roast:#2C1A0E;--bark:#3D2410;--leather:#6B3D1E;
+    --caramel:#A0522D;--amber:#C8782A;--gold:#E8A030;--cream:#F5E6C8;
+    --fog:#D4C4A0;--smoke:#8A7860;--green-go:#6BCB77;--red-stop:#E05252;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--espresso);color:var(--cream);font-family:'Outfit',sans-serif;}
+
+  /* ── Header ── */
+  .hero{background:var(--roast);border-bottom:1px solid var(--bark);}
+  .hero-content{max-width:1280px;margin:0 auto;padding:36px 32px 20px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .logo-area{display:flex;align-items:center;gap:16px;}
+  .logo-icon{width:52px;height:52px;background:var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+  .logo-main{font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:3px;color:var(--cream);line-height:1;}
+  .logo-main span{color:var(--gold);}
+  .logo-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--smoke);margin-top:2px;}
+  .hero-right{display:flex;align-items:center;gap:12px;}
+  .hero-tagline{font-family:'DM Serif Display',serif;font-style:italic;font-size:15px;color:var(--fog);opacity:0.8;text-align:right;max-width:220px;line-height:1.5;}
+  .theme-btn{background:var(--bark);border:1px solid var(--leather);border-radius:6px;color:var(--fog);font-size:16px;width:38px;height:38px;cursor:pointer;transition:background 0.15s,border-color 0.15s;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .theme-btn:hover{border-color:var(--amber);background:var(--leather);}
+  .hero-nav{max-width:1280px;margin:0 auto;padding:0 32px 14px;}
+  .app-nav{display:flex;gap:4px;}
+  .nav-tab{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;text-decoration:none;background:var(--bark);border:1px solid var(--leather);color:var(--fog);transition:border-color 0.15s,color 0.15s,background 0.15s;}
+  .nav-tab:hover{border-color:var(--amber);color:var(--cream);}
+  .nav-tab.active{background:var(--amber);border-color:var(--amber);color:var(--espresso);font-weight:600;}
+
+  /* ── Main ── */
+  .main{max-width:1280px;margin:0 auto;padding:32px 32px 60px;}
+  .page-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--amber);text-transform:uppercase;margin-bottom:6px;}
+  .page-title{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:3px;color:var(--cream);margin-bottom:4px;}
+  .page-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--smoke);letter-spacing:2px;margin-bottom:28px;}
+
+  /* ── Loading ── */
+  .loading-state{text-align:center;padding:72px 24px;}
+  .loading-moto{font-size:52px;margin-bottom:16px;display:inline-block;animation:motoRide 1.8s ease-in-out infinite;}
+  @keyframes motoRide{0%,100%{transform:translateX(-6px) rotate(-1deg);}50%{transform:translateX(6px) rotate(1deg);}}
+  .loading-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--fog);margin-bottom:8px;opacity:0.8;}
+  .loading-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--smoke);letter-spacing:2px;}
+  .loading-dots{display:flex;justify-content:center;gap:8px;margin-top:20px;}
+  .loading-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);animation:dotBounce 1.4s infinite ease-in-out;}
+  .loading-dot:nth-child(1){animation-delay:0s;}.loading-dot:nth-child(2){animation-delay:0.2s;}.loading-dot:nth-child(3){animation-delay:0.4s;}
+  @keyframes dotBounce{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}
+
+  /* ── Hero card ── */
+  .best-card{background:var(--roast);border:1px solid var(--bark);border-radius:16px;overflow:hidden;animation:cardIn 0.5s ease both;}
+  @keyframes cardIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  .best-card.excellent{border-color:var(--amber);}
+  .best-card.good{border-color:var(--caramel);}
+  .best-card.warn-border{border-color:rgba(224,82,82,0.4);}
+
+  /* Photo */
+  .best-photo-wrap{position:relative;width:100%;height:400px;overflow:hidden;background:var(--bark);}
+  .best-photo{width:100%;height:100%;object-fit:cover;display:block;transition:transform 7s ease;}
+  .best-card:hover .best-photo{transform:scale(1.05);}
+  .best-photo-gradient{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(26,16,8,0.15) 0%,rgba(26,16,8,0.62) 50%,rgba(26,16,8,0.92) 100%);}
+  .best-photo-error{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:80px;background:linear-gradient(135deg,var(--bark),var(--roast));}
+  .best-score-badge{position:absolute;top:16px;right:16px;background:var(--amber);color:var(--espresso);font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;padding:6px 14px;border-radius:8px;line-height:1;}
+  .best-photo-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:10px;}
+  .best-condition-label{display:inline-flex;align-items:center;gap:7px;background:rgba(26,16,8,0.75);border:1px solid rgba(200,120,42,0.4);border-radius:20px;padding:5px 14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:1px;backdrop-filter:blur(6px);}
+  .best-city-name{font-family:'Bebas Neue',cursive;font-size:56px;letter-spacing:2px;color:var(--cream);line-height:1;text-align:center;text-shadow:0 2px 20px rgba(0,0,0,0.9);}
+  .best-city-state{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--fog);letter-spacing:3px;opacity:0.9;text-align:center;text-shadow:0 1px 8px rgba(0,0,0,0.8);}
+
+  /* Body */
+  .best-body{padding:22px 28px;}
+
+  /* Alert */
+  .alert-banner{background:rgba(224,82,82,0.1);border:1px solid rgba(224,82,82,0.3);border-radius:8px;padding:10px 16px;margin-bottom:18px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#f09595;display:flex;align-items:center;gap:8px;}
+
+  /* Weather chips */
+  .weather-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+  .wchip{display:flex;align-items:center;gap:6px;background:var(--bark);border-radius:8px;padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--fog);letter-spacing:0.5px;}
+  .wchip strong{color:var(--cream);}
+  .wchip.hi{background:rgba(200,120,42,0.12);border:1px solid rgba(200,120,42,0.25);color:var(--gold);}
+  .wchip.bad{background:rgba(224,82,82,0.08);border:1px solid rgba(224,82,82,0.25);color:#f09595;}
+
+  /* Score bar */
+  .score-row{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .score-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--smoke);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
+  .score-track{flex:1;height:5px;background:var(--bark);border-radius:3px;overflow:hidden;}
+  .score-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--caramel),var(--amber),var(--gold));transition:width 0.8s ease;}
+  .score-val{font-family:'Bebas Neue',cursive;font-size:18px;color:var(--gold);min-width:32px;text-align:right;}
+
+  /* Today description */
+  .today-desc{font-size:14px;color:var(--fog);line-height:1.8;margin-bottom:22px;}
+
+  /* Section blocks */
+  .info-divider{height:1px;background:var(--bark);margin:22px 0;}
+  .info-block{margin-bottom:20px;}
+  .info-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--amber);text-transform:uppercase;margin-bottom:10px;}
+  .info-text{font-size:13px;color:var(--fog);line-height:1.75;}
+
+  /* Café card */
+  .cafe-card{background:var(--bark);border-radius:10px;padding:14px 16px;display:flex;align-items:flex-start;gap:14px;}
+  .cafe-icon{font-size:30px;flex-shrink:0;line-height:1;margin-top:2px;}
+  .cafe-name{font-family:'Bebas Neue',cursive;font-size:21px;letter-spacing:1px;color:var(--cream);line-height:1;margin-bottom:4px;}
+  .cafe-desc{font-size:12px;color:var(--fog);line-height:1.65;}
+
+  /* Places grid */
+  .places-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+  .place-chip{background:var(--bark);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--fog);display:flex;align-items:center;gap:8px;line-height:1.4;}
+  .place-chip::before{content:'📍';font-size:13px;flex-shrink:0;}
+
+  /* Cost */
+  .cost-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .cost-label-txt{font-size:13px;color:var(--fog);}
+  .cost-dots{display:flex;gap:5px;}
+  .cdot{width:10px;height:10px;border-radius:50%;background:var(--bark);}
+  .cdot.c1{background:var(--green-go);}.cdot.c2{background:var(--gold);}.cdot.c3{background:var(--amber);}.cdot.c4{background:var(--red-stop);}
+
+  /* Hourly */
+  .hourly-strip{display:flex;gap:6px;}
+  .hour-block{flex:1;background:var(--bark);border-radius:8px;padding:10px 5px;text-align:center;}
+  .hour-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--smoke);letter-spacing:0.3px;display:block;margin-bottom:4px;}
+  .hour-emoji{font-size:20px;display:block;line-height:1.3;}
+  .hour-temp{font-size:12px;font-weight:600;color:var(--fog);display:block;margin-top:2px;}
+
+  /* Map (genérico) */
+  .map-wrap{border-radius:12px;overflow:hidden;border:1px solid var(--bark);}
+  .map-wrap iframe{width:100%;height:300px;display:block;border:none;}
+
+  /* Seção de mapa ao final do card */
+  .best-map-section iframe{width:100%;height:300px;display:block;border:none;}
+
+  /* Light theme */
+  body.light{
+    --espresso:#F8F1E0;--roast:#EDE3C8;--bark:#DDD3B0;--leather:#C4AA80;
+    --caramel:#7A4820;--amber:#B06018;--gold:#906010;--cream:#1A1008;
+    --fog:#3A2410;--smoke:#6A5030;--green-go:#3A8844;--red-stop:#C03838;
+  }
+
+  /* Footer */
+  .footer{background:var(--roast);border-top:1px solid var(--bark);margin-top:40px;}
+  .footer-inner{max-width:1280px;margin:0 auto;padding:36px 32px 24px;}
+  .footer-top{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;}
+  .footer-btn{background:var(--bark);border:1px solid var(--leather);border-radius:8px;color:var(--fog);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;padding:10px 20px;cursor:pointer;transition:border-color 0.2s,color 0.2s,background 0.2s;display:inline-flex;align-items:center;gap:8px;}
+  .footer-btn:hover{border-color:var(--amber);color:var(--cream);background:var(--leather);}
+  .footer-responsible{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--smoke);padding:20px 0;border-top:1px solid var(--bark);border-bottom:1px solid var(--bark);line-height:1.8;}
+  .footer-responsible strong{color:var(--fog);}
+  .footer-bottom{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;padding-top:18px;}
+  .footer-legal-btn{background:none;border:none;color:var(--smoke);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.5px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0;transition:color 0.2s;}
+  .footer-legal-btn:hover{color:var(--amber);}
+  .footer-copy{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--bark);}
+
+  /* Modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+  .modal-overlay.open{opacity:1;pointer-events:all;}
+  .modal-box{background:var(--roast);border:1px solid var(--leather);border-radius:14px;max-width:540px;width:100%;max-height:82vh;overflow-y:auto;position:relative;transform:translateY(20px);transition:transform 0.25s;}
+  .modal-overlay.open .modal-box{transform:translateY(0);}
+  .modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--bark);display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;background:var(--roast);z-index:1;}
+  .modal-title{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:2px;color:var(--cream);line-height:1;}
+  .modal-close{background:var(--bark);border:1px solid var(--leather);border-radius:6px;color:var(--smoke);font-size:14px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color 0.15s,color 0.15s;}
+  .modal-close:hover{border-color:var(--amber);color:var(--cream);}
+  .modal-body{padding:22px 24px 28px;font-size:13px;color:var(--fog);line-height:1.75;}
+  .modal-body h4{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--amber);text-transform:uppercase;margin:18px 0 6px;}
+  .modal-body h4:first-child{margin-top:0;}
+  .modal-body p{margin-bottom:8px;}
+  .modal-body ul{padding-left:18px;margin-bottom:8px;}
+  .modal-body li{margin-bottom:4px;}
+
+  /* ── Desktop layout (≥ 900px) ── */
+  @media(min-width:900px){
+    /* Página */
+    .main{padding:44px 40px 80px;}
+    .page-eyebrow{font-size:11px;letter-spacing:4px;}
+    .page-title{font-size:40px;letter-spacing:4px;}
+    .page-sub{font-size:12px;margin-bottom:32px;}
+
+    /* Foto ocupa metade da tela */
+    .best-photo-wrap{height:50vh;min-height:380px;}
+
+    /* Corpo e mapa */
+    .best-body{padding:28px 36px;}
+    .best-map-section iframe{height:380px;}
+
+    /* Tipografia */
+    .best-city-name{font-size:60px;}
+    .today-desc{font-size:15px;}
+    .info-text{font-size:14px;}
+
+    /* Lugares em 2 colunas */
+    .places-grid{grid-template-columns:repeat(2,1fr);}
+
+    /* Hourly com mais espaço */
+    .hour-block{padding:12px 6px;}
+    .hour-emoji{font-size:22px;}
+    .hour-temp{font-size:13px;}
+  }
+
+  /* Telas muito grandes (≥ 1280px) */
+  @media(min-width:1280px){
+    .best-body{padding:36px 48px;}
+    .best-city-name{font-size:68px;}
+    .best-condition-label{font-size:11px;}
+    .places-grid{grid-template-columns:repeat(2,1fr);}
+    .best-map-section iframe{height:440px;}
+  }
+
+  /* ── Mobile (≤ 600px) ── */
+  @media(max-width:600px){
+    .hero-content{padding:14px 16px 10px;flex-direction:column;align-items:flex-start;gap:4px;}
+    .logo-icon{width:42px;height:42px;font-size:20px;}
+    .logo-main{font-size:28px;letter-spacing:2px;}
+    .logo-sub{font-size:9px;}
+    .hero-tagline{display:none;}
+    .hero-nav{padding:8px 16px 12px;}
+    .main{padding:20px 12px 48px;}
+    .best-photo-wrap{height:260px;}
+    .best-city-name{font-size:38px;}
+    .best-body{padding:16px;}
+    .weather-chips{gap:6px;}
+    .wchip{padding:7px 10px;font-size:10px;}
+    .places-grid{grid-template-columns:1fr;}
+    .best-map-section iframe{height:220px;}
+    .footer-inner{padding:24px 16px 16px;}
+    .footer-top{flex-direction:column;align-items:stretch;gap:8px;}
+    .footer-btn{justify-content:center;}
+    .footer-bottom{gap:12px;}
+  }
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<header class="hero">
+  <div class="hero-content">
+    <div class="logo-area">
+      <div class="logo-icon">🏍</div>
+      <div>
+        <div class="logo-main">Rolê<span>Moto</span></div>
+        <div class="logo-sub">Clima pra estrada · Café pra alma</div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-tagline">Escolha o destino certo.<br><em>O asfalto molhado não perdoa.</em></div>
+      <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" title="Alternar tema">🌙</button>
+    </div>
+  </div>
+  <div class="hero-nav">
+    <nav class="app-nav">
+      <a href="/" class="nav-tab active">🏠 Início</a>
+      <a href="/clima" class="nav-tab">⚡ Clima</a>
+      <a href="/recomendados.html" class="nav-tab">📍 Recomendados</a>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page-eyebrow">São Paulo · clima de hoje</div>
+  <div class="page-title">🏍️ Melhor Destino Para Viajar Hoje</div>
+  <div class="page-sub">seleção automática · score climático · atualizado diariamente</div>
+
+  <div id="loadingState" class="loading-state">
+    <div class="loading-moto">🏍️</div>
+    <div class="loading-title">Verificando o céu em São Paulo...</div>
+    <div class="loading-sub">12 destinos turísticos · clima de hoje</div>
+    <div class="loading-dots">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+    </div>
+  </div>
+
+  <div id="bestCard" style="display:none"></div>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <button class="footer-btn" onclick="openModal('modal-suporte')">🐛&nbsp; Suporte</button>
+      <button class="footer-btn" onclick="openModal('modal-seguranca')">🔒&nbsp; Segurança</button>
+      <button class="footer-btn" onclick="openModal('modal-docs')">📖&nbsp; Documentação</button>
+    </div>
+    <div class="footer-responsible">
+      Desenvolvido por <strong>Ryan Oliveira</strong><br>
+      <span style="font-size:10px;opacity:0.6">RolêMoto · Clima pra estrada · Café pra alma</span>
+    </div>
+    <div class="footer-bottom">
+      <button class="footer-legal-btn" onclick="openModal('modal-privacidade')">Política de Privacidade</button>
+      <span class="footer-copy">·</span>
+      <button class="footer-legal-btn" onclick="openModal('modal-avisos')">Avisos Legais</button>
+      <span class="footer-copy">·</span>
+      <span class="footer-copy">© 2025 RolêMoto</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Modal: Suporte -->
+<div class="modal-overlay" id="modal-suporte" onclick="closeModalOutside(event,'modal-suporte')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">🐛 Suporte</span>
+      <button class="modal-close" onclick="closeModal('modal-suporte')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>Encontrou um problema?</h4>
+      <p>Se você encontrou um bug, comportamento inesperado ou tem uma sugestão de melhoria, entre em contato. Quanto mais detalhes, mais rápido conseguimos resolver.</p>
+      <h4>Como reportar</h4>
+      <ul>
+        <li>Descreva o que aconteceu e o que era esperado</li>
+        <li>Informe o estado e o dia selecionados no momento do erro</li>
+        <li>Se possível, inclua uma captura de tela</li>
+        <li>Mencione o navegador utilizado (Chrome, Firefox, Safari…)</li>
+      </ul>
+      <h4>Contato</h4>
+      <p>📧 <strong>ryanoliveira.vm@gmail.com</strong></p>
+      <p style="font-size:11px;color:var(--smoke)">Respondemos em até 48 horas úteis.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Segurança -->
+<div class="modal-overlay" id="modal-seguranca" onclick="closeModalOutside(event,'modal-seguranca')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">🔒 Segurança</span>
+      <button class="modal-close" onclick="closeModal('modal-seguranca')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-badge-ok">✓ Site seguro · Sem coleta de dados pessoais</div>
+      <h4>Privacidade</h4>
+      <p>O RolêMoto <strong>não coleta, armazena nem processa nenhum dado pessoal</strong>. Não existe cadastro, login ou qualquer formulário que peça informações suas.</p>
+      <h4>Armazenamento local</h4>
+      <p>Apenas suas preferências de uso (cidades favoritas e tema visual) são salvas no <strong>localStorage</strong> do seu próprio navegador. Esses dados ficam exclusivamente no seu dispositivo e jamais são enviados a qualquer servidor.</p>
+      <h4>LGPD</h4>
+      <p>Em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018). Por não tratar dados pessoais identificáveis, este serviço está isento das obrigações de tratamento previstas na lei.</p>
+      <h4>Chave de API</h4>
+      <p>As consultas de clima são intermediadas por um servidor próprio. A chave da API fica protegida no servidor — nunca exposta no código do navegador.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Documentação -->
+<div class="modal-overlay" id="modal-docs" onclick="closeModalOutside(event,'modal-docs')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">📖 Documentação</span>
+      <button class="modal-close" onclick="closeModal('modal-docs')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>O que é o RolêMoto?</h4>
+      <p>É uma ferramenta que verifica o clima das principais cidades e destinos turísticos de cada estado brasileiro, e indica quais têm as melhores condições para um passeio de moto no dia escolhido.</p>
+      <h4>Como usar</h4>
+      <ul>
+        <li>Selecione o <strong>estado</strong> no menu superior</li>
+        <li>Escolha o <strong>dia</strong> (hoje ou até 7 dias à frente)</li>
+        <li>Clique em <strong>⚡ Buscar</strong></li>
+      </ul>
+      <h4>Rolê Score (0–100)</h4>
+      <p>Cada cidade recebe uma pontuação com base nas condições do dia:</p>
+      <ul>
+        <li>☀️ Céu aberto: <strong>+40 pts</strong></li>
+        <li>🌡️ Temperatura ideal (20–30°C): <strong>+30 pts</strong></li>
+        <li>🌧️ Sem chuva: <strong>+20 pts</strong></li>
+        <li>💨 Vento fraco (&lt;25 km/h): <strong>+10 pts</strong></li>
+        <li>⛈️ Chuva ou tempestade: <strong>pontos negativos</strong></li>
+      </ul>
+      <h4>Destinos Turísticos</h4>
+      <p>Exibe os principais destinos turísticos do estado com cards detalhados e previsão horária dividida em 4 períodos do dia.</p>
+      <h4>Top 20 Mais Ensolaradas</h4>
+      <p>Consulta uma lista mais ampla de cidades (incluindo cidades não-turísticas) e exibe as 20 com melhor Rolê Score no dia.</p>
+      <h4>Previsão horária nos cards</h4>
+      <p>Cada card mostra 4 blocos de horário — madrugada, manhã, tarde e noite — com o emoji do tempo predominante e a temperatura média do período.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Política de Privacidade -->
+<div class="modal-overlay" id="modal-privacidade" onclick="closeModalOutside(event,'modal-privacidade')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">📋 Política de Privacidade</span>
+      <button class="modal-close" onclick="closeModal('modal-privacidade')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>1. Dados coletados</h4>
+      <p>Este site não coleta nenhum dado pessoal identificável. As únicas informações armazenadas são preferências locais do usuário (favoritos e tema), salvas exclusivamente no dispositivo do usuário via localStorage.</p>
+      <h4>2. Uso de APIs externas</h4>
+      <p>As consultas de previsão do tempo são realizadas através da WeatherAPI.com. As requisições incluem apenas nomes de cidades e datas, sem qualquer dado pessoal.</p>
+      <h4>3. Cookies e rastreamento</h4>
+      <p>Este site não utiliza cookies, pixels de rastreamento nem qualquer tecnologia de monitoramento comportamental.</p>
+      <h4>4. Compartilhamento de dados</h4>
+      <p>Nenhum dado é compartilhado com terceiros, pois nenhum dado pessoal é coletado.</p>
+      <h4>5. LGPD</h4>
+      <p>Em conformidade com a Lei nº 13.709/2018 (LGPD). Serviço classificado como de baixo risco por não tratar dados pessoais.</p>
+      <h4>6. Contato</h4>
+      <p>Dúvidas: <strong>ryanoliveira.vm@gmail.com</strong></p>
+      <p style="font-size:10px;color:var(--smoke);margin-top:14px">Última atualização: Maio de 2025</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Avisos Legais -->
+<div class="modal-overlay" id="modal-avisos" onclick="closeModalOutside(event,'modal-avisos')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">⚖️ Avisos Legais</span>
+      <button class="modal-close" onclick="closeModal('modal-avisos')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>Precisão das informações</h4>
+      <p>As previsões climáticas são fornecidas pela WeatherAPI.com e têm caráter exclusivamente informativo. O RolêMoto não se responsabiliza por imprecisões nas previsões nem por decisões tomadas com base nelas.</p>
+      <h4>Uso por conta e risco</h4>
+      <p>A decisão de realizar ou não um passeio de moto é de <strong>exclusiva responsabilidade do usuário</strong>. Sempre verifique as condições climáticas e de estrada antes de sair. Dirija com segurança.</p>
+      <h4>Propriedade intelectual</h4>
+      <p>O código-fonte, design e conteúdo deste site são propriedade de Ryan Oliveira. Reprodução não autorizada é proibida.</p>
+      <h4>Isenção de responsabilidade</h4>
+      <p>O RolêMoto é uma ferramenta de auxílio à decisão e não substitui o julgamento do piloto. Condições climáticas podem mudar rapidamente e sem aviso.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── SP tourist cities ──────────────────────────────────────────────────────────
+const SP_CITIES = ["Santos","Ubatuba","Campos do Jordão","Ilhabela","Brotas","Atibaia","Itu","Holambra","Barra Bonita","São Paulo","Campinas","Piracicaba"];
+
+// ── Static city profiles ───────────────────────────────────────────────────────
+const SP_PROFILES = {
+  'Santos': {
+    emoji: '⛵',
+    photo: 'https://picsum.photos/seed/santos-porto-sp/1200/500',
+    history: 'Fundada em 1546, Santos foi a porta do café brasileiro para o mundo. Seu centro histórico guarda sobrados do século XIX e a energia de quem viveu entre o mar e o planalto paulista.',
+    cafe: { name: 'Café do Porto', desc: 'No centro histórico, próximo ao Museu do Café. Expresso encorpado e broa de milho — parada obrigatória antes de encarar a Via Anchieta.' },
+    places: ['Orla da praia (7 km contínuos)', 'Museu do Café', 'Monte Serrat', 'Aquário Municipal'],
+    cost: 'Médio', costLevel: 2,
+  },
+  'Ubatuba': {
+    emoji: '🌊',
+    photo: 'https://picsum.photos/seed/ubatuba-litoral/1200/500',
+    history: 'Reduto de piratas no período colonial, Ubatuba tem mais de 100 praias e Mata Atlântica preservada. Motociclistas adoram a Rio-Santos, uma das mais belas estradas litorâneas do país.',
+    cafe: { name: 'Café das Ondas', desc: 'Bistrô na praia do Saco da Ribeira, com vista para os veleiros. Café coado e tapioca de banana antes de explorar as praias selvagens.' },
+    places: ['Praia do Félix', 'Parque Estadual Serra do Mar', 'Saco da Ribeira', 'Praia Brava'],
+    cost: 'Médio', costLevel: 2,
+  },
+  'Campos do Jordão': {
+    emoji: '🏔️',
+    photo: 'https://picsum.photos/seed/camposjordao-serra/1200/500',
+    history: 'A 1.628 m de altitude, Campos do Jordão foi fundada por colonos europeus no início do século XX e se tornou estância climática por decreto. O inverno serrano atrai motociclistas em busca de curvas e chocolate quente.',
+    cafe: { name: 'Padaria Sans Souci', desc: 'Padaria artesanal centenária na Vila Capivari. O croissant de avelã e o café colonial são parada obrigatória antes de subir o Morro do Elefante.' },
+    places: ['Vila Capivari', 'Morro do Elefante', 'Teleférico', 'Palácio Boa Vista'],
+    cost: 'Médio a Alto', costLevel: 3,
+  },
+  'Ilhabela': {
+    emoji: '🏝️',
+    photo: 'https://picsum.photos/seed/ilhabela-ilha/1200/500',
+    history: 'Com 99% de Mata Atlântica, Ilhabela foi ponto de parada de corsários e navios negreiros. Hoje tem 36 praias, mais de 300 cachoeiras e uma travessia de balsa que já é parte da aventura.',
+    cafe: { name: 'Café do Rancho', desc: 'Casinha de madeira com vista para o canal de São Sebastião. Café coado e bolo de banana da terra antes de explorar as trilhas.' },
+    places: ['Praia dos Castelhanos', 'Cachoeira da Laje', 'Centro histórico', 'Farol de São Sebastião'],
+    cost: 'Médio a Alto', costLevel: 3,
+  },
+  'Brotas': {
+    emoji: '🚵',
+    photo: 'https://picsum.photos/seed/brotas-aventura/1200/500',
+    history: 'Pequena cidade do interior que se reinventou como capital paulista do ecoturismo nos anos 90. O Rio Jacaré-Pepira e as estradas sinuosas da região encantam motociclistas de toda o Brasil.',
+    cafe: { name: 'Café do Aventureiro', desc: 'No centro, com tapioca e mel artesanal. A parada perfeita para repor energia antes de explorar as corredeiras.' },
+    places: ['Rio Jacaré-Pepira', 'Cachoeira da Sereia', 'Represa de Brotas', 'Mirante da Serra'],
+    cost: 'Médio', costLevel: 2,
+  },
+  'Atibaia': {
+    emoji: '🍓',
+    photo: 'https://picsum.photos/seed/atibaia-flores/1200/500',
+    history: 'Conhecida como a cidade das flores e dos morangos, Atibaia tem Festival de Flores há mais de 40 anos. O clima serrano e as estradas que sobem para Campos do Jordão fazem dela ponto estratégico para motociclistas.',
+    cafe: { name: 'Casa do Morango', desc: 'Quitanda famosa com café da manhã premium: morango fresco, chantily e pão de queijo recém-saído do forno.' },
+    places: ['Parque Municipal', 'Jardim das Orquídeas', 'Pedra Grande', 'Museu João Batista Conti'],
+    cost: 'Baixo a Médio', costLevel: 2,
+  },
+  'Itu': {
+    emoji: '🏛️',
+    photo: 'https://picsum.photos/seed/itu-historica/1200/500',
+    history: 'Itu foi sede da Convenção Republicana de 1873. Seu centro histórico de 250 anos é tombado, e a fama das coisas gigantes espalhadas pelas ruas virou atração turística por si só.',
+    cafe: { name: 'Café Republicano', desc: 'Sobrado colonial no centro histórico. Café passado em coador de pano e bolo de fubá que combinam com o ambiente do século XIX.' },
+    places: ['Largo do Rosário', 'Museu Republicano', 'Feirinha de Artesanato', 'Casa da Memória'],
+    cost: 'Baixo', costLevel: 1,
+  },
+  'Holambra': {
+    emoji: '🌷',
+    photo: 'https://picsum.photos/seed/holambra-flores/1200/500',
+    history: 'Fundada em 1948 por imigrantes holandeses que reconstruíam a vida pós-guerra. Hoje é a capital brasileira das flores, responsável por 40% da produção nacional. Os moinhos e a arquitetura europeia surpreendem quem chega de moto.',
+    cafe: { name: 'Café Amsterdam', desc: 'Stroopwafel artesanal e leite vaporizado em ambiente decorado com moinhos. Chega cedo — fica lotado nos fins de semana.' },
+    places: ['Moinho de vento', 'Expoflora (parque de flores)', 'Feira das Nações', 'Igreja Holandesa'],
+    cost: 'Baixo a Médio', costLevel: 1,
+  },
+  'Barra Bonita': {
+    emoji: '⚓',
+    photo: 'https://live.staticflickr.com/5095/5397643005_0f8eba7483.jpg',
+    history: 'Às margens do Rio Tietê, Barra Bonita ficou famosa pelas eclusas gigantes da usina hidrelétrica, que permitem a passagem de embarcações entre diferentes níveis do rio. Um destino inusitado e tranquilo.',
+    cafe: { name: 'Café da Orla', desc: 'Bar-café com vista para o rio Tietê. Famoso pelo café com cachaça artesanal da região canavieira — para os que ainda não vão pegar a estrada.' },
+    places: ['Eclusas do Tietê', 'Parque das Águas', 'Mirante da Represa', 'Pesca esportiva'],
+    cost: 'Baixo', costLevel: 1,
+  },
+  'São Paulo': {
+    emoji: '🌆',
+    photo: 'https://picsum.photos/seed/saopaulo-cidade/1200/500',
+    history: 'Fundada pelos jesuítas em 1554, São Paulo cresceu com o café, a imigração e a industrialização. É o maior polo financeiro e cultural da América Latina — para motociclistas urbanos, a cidade tem roteiros exclusivos.',
+    cafe: { name: 'Café Girondino', desc: 'Operando desde 1887 no centro histórico. Ambiente de época, café coado e salgados clássicos — uma das mais antigas cafeterias da cidade.' },
+    places: ['Parque Ibirapuera', 'MASP', 'Pinacoteca', 'Mercadão Municipal'],
+    cost: 'Variado', costLevel: 3,
+  },
+  'Campinas': {
+    emoji: '🎓',
+    photo: 'https://picsum.photos/seed/campinas-sp/1200/500',
+    history: 'Segunda cidade mais importante de SP no século XIX, com forte produção cafeeira. Hoje abriga a UNICAMP e é um dos maiores polos de tecnologia do Brasil — mas seu centro histórico guarda prédios do Império.',
+    cafe: { name: 'Café Cultura', desc: 'Cafeteria na região central, famosa pelo espresso encorpado e pelo ambiente universitário. Boa parada antes de pegar a Anhanguera.' },
+    places: ['Bosque dos Jequitibás', 'Museu de Arte', 'Largo do Rosário', 'Mercado Municipal'],
+    cost: 'Médio', costLevel: 2,
+  },
+  'Piracicaba': {
+    emoji: '🎶',
+    photo: 'https://picsum.photos/seed/piracicaba-rio/1200/500',
+    history: 'Fundada em 1784, Piracicaba é considerada o berço da caipirinha. O Rio Piracicaba corta a cidade criando um visual único, e o Rodeio Internacional é um dos maiores do país.',
+    cafe: { name: 'Café do Engenho', desc: 'No centro histórico, serve café coado com broa de milho e queijo curado da região. Vista para o Rio Piracicaba incluída.' },
+    places: ['Engenho Central', 'Orla do Rio Piracicaba', 'ESALQ', 'Museu Prudente de Morais'],
+    cost: 'Baixo a Médio', costLevel: 1,
+  },
+};
+
+// ── SP bounds (com margem de 2°) ───────────────────────────────────────────────
+const SP_BOUNDS = { latMin: -27.3, latMax: -17.8, lonMin: -55.1, lonMax: -42.2 };
+
+function isWithinSP(lat, lon) {
+  return lat >= SP_BOUNDS.latMin && lat <= SP_BOUNDS.latMax && lon >= SP_BOUNDS.lonMin && lon <= SP_BOUNDS.lonMax;
+}
+
+// ── Score (igual ao app principal) ────────────────────────────────────────────
+function scoreFromForecast(day) {
+  let score = 0;
+  const temp = (day.maxtemp_c + day.mintemp_c) / 2;
+  const rain = day.totalprecip_mm;
+  const wind = day.maxwind_kph;
+  const code = day.condition.code;
+  if (code === 1000) score += 40;
+  else if ([1003,1006].includes(code)) score += 30;
+  else if ([1009,1030].includes(code)) score += 15;
+  else if ([1063,1150,1153,1168,1171,1180,1183,1186,1189,1192,1195,1198,1201,1240,1243,1246].includes(code)) score -= 20;
+  else if ([1087,1273,1276,1279,1282].includes(code)) score -= 50;
+  if (temp >= 20 && temp <= 30) score += 30;
+  else if (temp >= 16 && temp < 20) score += 20;
+  else if (temp > 30 && temp <= 35) score += 15;
+  else score += 5;
+  if (rain === 0) score += 20;
+  else if (rain < 2) score += 10;
+  else if (rain < 8) score -= 10;
+  else score -= 25;
+  if (wind <= 25) score += 10;
+  else if (wind <= 40) score += 4;
+  else score -= 10;
+  return Math.max(0, Math.min(100, score));
+}
+
+function getWeatherEmoji(code) {
+  if (code === 1000) return '☀️';
+  if (code === 1003) return '🌤️';
+  if (code === 1006) return '⛅';
+  if (code === 1009) return '☁️';
+  if ([1030,1135,1147].includes(code)) return '🌫️';
+  if ([1063,1150,1153].includes(code)) return '🌦️';
+  if ([1180,1183,1186,1189,1192,1195].includes(code)) return '🌧️';
+  if ([1087,1273,1276,1279,1282].includes(code)) return '⛈️';
+  if ([1066,1114,1117].includes(code)) return '❄️';
+  return '🌡️';
+}
+
+function buildHourBlocks(hours) {
+  const ranges = [
+    { label:'00-06h', from:0, to:6 },
+    { label:'06-12h', from:6, to:12 },
+    { label:'12-18h', from:12, to:18 },
+    { label:'18-00h', from:18, to:24 },
+  ];
+  return ranges.map(range => {
+    const slice = hours.filter(h => {
+      const hr = parseInt(h.time.split(' ')[1], 10);
+      return hr >= range.from && hr < range.to;
+    });
+    if (!slice.length) return null;
+    const worst = slice.reduce((a, b) => b.precip_mm > a.precip_mm ? b : a);
+    const rep = worst.precip_mm >= 0.1 ? worst : slice[Math.floor(slice.length / 2)];
+    const avgTemp = Math.round(slice.reduce((s, h) => s + h.temp_c, 0) / slice.length);
+    return { label: range.label, emoji: getWeatherEmoji(rep.condition.code), temp: avgTemp };
+  }).filter(Boolean);
+}
+
+// ── Pick best city with tie-breaking ──────────────────────────────────────────
+function pickBest(results) {
+  return [...results].sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    if (a.rain !== b.rain) return a.rain - b.rain;
+    const ideal = 23;
+    const aT = Math.abs(((a.tempMax + a.tempMin) / 2) - ideal);
+    const bT = Math.abs(((b.tempMax + b.tempMin) / 2) - ideal);
+    if (aT !== bT) return aT - bT;
+    return a.wind - b.wind;
+  })[0];
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+function conditionLabel(r) {
+  if (r.score >= 80) return '☀️ Clima excelente para rodar hoje';
+  if (r.score >= 65) return '🌤️ Boas condições para o rolê';
+  if (r.score >= 45) return '⛅ Clima razoável — rode com atenção';
+  return '⚠️ Hoje o clima não está ideal para rodar';
+}
+
+function buildTodayDesc(city, r) {
+  const avgTemp = Math.round((r.tempMax + r.tempMin) / 2);
+  const cond = r.score >= 80 ? 'clima excelente, com sol predominante e temperatura ideal' :
+               r.score >= 65 ? 'boas condições de rolê, com céu parcialmente nublado' :
+               r.score >= 45 ? 'clima razoável — fique atento à previsão horária' :
+               'condições abaixo do ideal hoje — considere adiar o rolê';
+  const rainDesc = r.rainChance <= 10 ? 'baixíssima chance de chuva' :
+                   r.rainChance <= 30 ? 'pequena possibilidade de garoa' :
+                   r.rainChance <= 60 ? 'chance moderada de chuva ao longo do dia' :
+                   'alta probabilidade de chuva';
+  const ending = r.score >= 65
+    ? 'Vale muito a pena pegar a moto hoje.'
+    : 'Avalie as condições antes de partir.';
+  return `Hoje ${city} apresenta ${cond}, com máxima de ${Math.round(r.tempMax)}°C, mínima de ${Math.round(r.tempMin)}°C e ${rainDesc} (${r.rainChance}%). ${ending}`;
+}
+
+function getCostDots(level) {
+  return [1,2,3,4].map(i =>
+    `<div class="cdot${i <= level ? ' c'+level : ''}"></div>`
+  ).join('');
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────────
+function renderBestCard(r) {
+  const profile = SP_PROFILES[r.city] || {};
+  const isAlert = r.score < 45;
+  const cardClass = r.score >= 75 ? 'best-card excellent' : r.score >= 55 ? 'best-card good' : 'best-card warn-border';
+  const label = conditionLabel(r);
+  const windColor = r.wind <= 25 ? '' : r.wind <= 45 ? '' : 'bad';
+  const rainClass = r.rainChance <= 20 ? '' : r.rainChance <= 50 ? '' : 'bad';
+
+  const hourlyHTML = r.hourBlocks.length
+    ? `<div class="hourly-strip">${r.hourBlocks.map(b => `<div class="hour-block"><span class="hour-label">${b.label}</span><span class="hour-emoji">${b.emoji}</span><span class="hour-temp">${b.temp}°</span></div>`).join('')}</div>`
+    : '';
+
+  const placesHTML = (profile.places || []).map(p => `<div class="place-chip">${p}</div>`).join('');
+  const mapQ = encodeURIComponent(r.city + ', São Paulo, Brazil');
+
+  const html = `
+    <div class="${cardClass}">
+      <div class="best-photo-wrap">
+        <img class="best-photo" src="${profile.photo || ''}"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          alt="${r.city}">
+        <div class="best-photo-error" style="display:none">${profile.emoji || '🏙️'}</div>
+        <div class="best-photo-gradient"></div>
+        <div class="best-score-badge">🏍️ ${r.score}/100</div>
+        <div class="best-photo-overlay">
+          <div class="best-condition-label">${r.emoji} ${label}</div>
+          <div class="best-city-name">${r.city}</div>
+          <div class="best-city-state">São Paulo · SP</div>
+        </div>
+      </div>
+
+      <div class="best-body">
+        ${isAlert ? `<div class="alert-banner">⚠️ Hoje o clima não está ideal para rodar — confira a previsão horária antes de partir.</div>` : ''}
+
+        <div class="weather-chips">
+          <div class="wchip hi">🌡️ <strong>máx ${Math.round(r.tempMax)}°C</strong> · mín ${Math.round(r.tempMin)}°C</div>
+          <div class="wchip ${rainClass}">🌧️ <strong>${r.rainChance}%</strong> chuva</div>
+          <div class="wchip ${windColor}">💨 <strong>${Math.round(r.wind)} km/h</strong> vento</div>
+          <div class="wchip">💧 <strong>${r.humidity}%</strong> umidade</div>
+        </div>
+
+        <div class="score-row">
+          <span class="score-label">Rolê Score</span>
+          <div class="score-track"><div class="score-fill" style="width:${r.score}%"></div></div>
+          <span class="score-val">${r.score}</span>
+        </div>
+
+        <div class="today-desc">${buildTodayDesc(r.city, r)}</div>
+
+        <div class="info-divider"></div>
+
+        <div class="info-block">
+          <div class="info-label">🏛️ Conheça o destino</div>
+          <div class="info-text">${profile.history || ''}</div>
+        </div>
+
+        <div class="info-divider"></div>
+
+        <div class="info-block">
+          <div class="info-label">☕ Café da manhã recomendado</div>
+          <div class="cafe-card">
+            <div class="cafe-icon">☕</div>
+            <div>
+              <div class="cafe-name">${profile.cafe ? profile.cafe.name : '—'}</div>
+              <div class="cafe-desc">${profile.cafe ? profile.cafe.desc : ''}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-divider"></div>
+
+        <div class="info-block">
+          <div class="info-label">📍 Lugares para visitar</div>
+          <div class="places-grid">${placesHTML}</div>
+        </div>
+
+        <div class="info-divider"></div>
+
+        <div class="info-block">
+          <div class="info-label">💸 Custo estimado da viagem</div>
+          <div class="cost-row">
+            <div class="cost-dots">${getCostDots(profile.costLevel || 2)}</div>
+            <span class="cost-label-txt">${profile.cost || 'Médio'}</span>
+          </div>
+        </div>
+
+        <div class="info-divider"></div>
+
+        <div class="info-block">
+          <div class="info-label">🕐 Clima do dia — previsão horária</div>
+          ${hourlyHTML || '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;color:var(--smoke)">Dados horários não disponíveis.</div>'}
+        </div>
+
+        <div class="info-divider"></div>
+
+        <div class="info-block" style="padding-bottom:4px;">
+          <div class="info-label">🗺️ Localização</div>
+        </div>
+      </div>
+
+      <div class="best-map-section">
+        <iframe
+          src="https://maps.google.com/maps?q=${mapQ}&output=embed&hl=pt"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Mapa de ${r.city}">
+        </iframe>
+      </div>
+    </div>`;
+
+  document.getElementById('bestCard').innerHTML = html;
+  document.getElementById('bestCard').style.display = 'block';
+  document.getElementById('loadingState').style.display = 'none';
+}
+
+// ── Fetch ──────────────────────────────────────────────────────────────────────
+async function fetchBestCity() {
+  const results = [];
+  try {
+    await Promise.allSettled(SP_CITIES.map(async city => {
+      try {
+        const res = await fetch(`/api/weather/forecast?q=${encodeURIComponent(city + ', São Paulo, Brazil')}&days=1`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const country = (data.location.country || '').toLowerCase();
+        if (!country.includes('brazil') && !country.includes('brasil')) return;
+        if (!isWithinSP(data.location.lat, data.location.lon)) return;
+        const dayData = data.forecast.forecastday[0];
+        if (!dayData) return;
+        results.push({
+          city,
+          score: scoreFromForecast(dayData.day),
+          emoji: getWeatherEmoji(dayData.day.condition.code),
+          conditionText: dayData.day.condition.text,
+          tempMin: dayData.day.mintemp_c,
+          tempMax: dayData.day.maxtemp_c,
+          rain: dayData.day.totalprecip_mm,
+          rainChance: dayData.day.daily_chance_of_rain || 0,
+          wind: dayData.day.maxwind_kph,
+          humidity: dayData.day.avghumidity,
+          hourBlocks: buildHourBlocks(dayData.hour || []),
+        });
+      } catch(e) {}
+    }));
+  } catch(e) {}
+
+  if (results.length === 0) {
+    document.getElementById('loadingState').style.display = 'none';
+    return;
+  }
+  renderBestCard(pickBest(results));
+}
+
+// ── Theme ──────────────────────────────────────────────────────────────────────
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('themeToggle').textContent = isLight ? '🌑' : '🌙';
+  try { localStorage.setItem('roleMoto_theme', isLight ? 'light' : 'dark'); } catch(e) {}
+}
+
+// ── Modals ─────────────────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+function closeModalOutside(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open')); document.body.style.overflow = ''; }
+});
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+fetchBestCity();
+(function initTheme() {
+  try {
+    if (localStorage.getItem('roleMoto_theme') === 'light') {
+      document.body.classList.add('light');
+      document.getElementById('themeToggle').textContent = '🌑';
+    }
+  } catch(e) {}
+})();
+</script>
